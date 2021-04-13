@@ -2,26 +2,23 @@ package br.com.minhaudocao.adote.controller;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.Normalizer;
 import java.util.List;
 
 import br.com.minhaudocao.adote.entity.*;
+import br.com.minhaudocao.adote.exception.ResourceNotFoundException;
 import br.com.minhaudocao.adote.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.com.minhaudocao.adote.repository.PessoaRepository;
 import br.com.minhaudocao.adote.repository.PetRepository;
 
 @Controller
-@RequestMapping(path = "/adote")
+@RequestMapping(path = "/api")
 public class MinhaAudocaoController {
 
     @Autowired
@@ -44,9 +41,9 @@ public class MinhaAudocaoController {
 
     @PostMapping(path = "/pessoa/add")
     public ResponseEntity<Pessoa> addNewUser(Pessoa pessoa) {
-        try{
+        try {
             pessoaService.save(pessoa);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             System.out.println(ex.getStackTrace());
             return ResponseEntity.badRequest().body(pessoa);
         }
@@ -55,9 +52,9 @@ public class MinhaAudocaoController {
 
     @PostMapping("/pet/add")
     public ResponseEntity<Pet> addNewPet(@RequestBody Pet pet) {
-        try{
+        try {
             petService.save(pet);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             System.out.println(ex.getStackTrace());
             return ResponseEntity.badRequest().body(pet);
         }
@@ -66,9 +63,9 @@ public class MinhaAudocaoController {
 
     @PostMapping("/instituicao/add")
     public ResponseEntity<Instituicao> addNewInstituicao(@RequestBody Instituicao instituicao) {
-        try{
+        try {
             instituicaoService.save(instituicao);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             System.out.println(ex.getStackTrace());
             return ResponseEntity.badRequest().body(instituicao);
         }
@@ -77,9 +74,9 @@ public class MinhaAudocaoController {
 
     @PostMapping("/endereco/add")
     public ResponseEntity<Endereco> addNewEndereco(@RequestBody Endereco endereco) {
-        try{
+        try {
             enderecoService.save(endereco);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             System.out.println(ex.getStackTrace());
             return ResponseEntity.badRequest().body(endereco);
         }
@@ -88,9 +85,9 @@ public class MinhaAudocaoController {
 
     @PostMapping("/formulario/add")
     public ResponseEntity<Formulario> addNewFormulario(@RequestBody Formulario formulario) {
-        try{
+        try {
             formularioService.save(formulario);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             System.out.println(ex.getStackTrace());
             return ResponseEntity.badRequest().body(formulario);
         }
@@ -99,33 +96,92 @@ public class MinhaAudocaoController {
 
     @PostMapping("/evento/add")
     public ResponseEntity<Evento> addNewEvento(@RequestBody Evento evento) {
-        try{
+        try {
             eventoService.save(evento);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             System.out.println(ex.getStackTrace());
             return ResponseEntity.badRequest().body(evento);
         }
         return ResponseEntity.ok().body(evento);
     }
 
+    @GetMapping(path = "/pessoa/{id}")
+    public @ResponseBody ResponseEntity<Pessoa> getPessoa(@PathVariable("id") Long id) {
+        try {
+            Pessoa pessoa = pessoaService.getById(id);
+            return ResponseEntity.ok().body(pessoa);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @GetMapping(path = "/pessoa/all")
-    public @ResponseBody List<Pessoa> getAllUsers() {
+    public @ResponseBody
+    List<Pessoa> getAllUsers() {
         return pessoaService.getAll();
     }
 
+    @GetMapping(path = "/pet/{id}")
+    public @ResponseBody ResponseEntity<Pet> getPet(@PathVariable("id") Long id) {
+        try {
+            Pet pet = petService.getById(id);
+            return ResponseEntity.ok().body(pet);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @GetMapping(path = "/pet/all")
-    public @ResponseBody List<Pet> getAllPets() {
+    public @ResponseBody
+    List<Pet> getAllPets() {
         return petService.getAll();
     }
 
+    @GetMapping(path = "/instituicao/{id}")
+    public @ResponseBody ResponseEntity<Instituicao> getInstituicao(@PathVariable("id") Long id) {
+        try {
+            Instituicao instituicao = instituicaoService.getById(id);
+            return ResponseEntity.ok().body(instituicao);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @GetMapping(path = "/instituicao/all")
-    public @ResponseBody List<Instituicao> getAllInstituicoes() {
+    public @ResponseBody
+    List<Instituicao> getAllInstituicoes() {
         return instituicaoService.getAll();
     }
 
+    @GetMapping(path = "/formulario/{id}")
+    public @ResponseBody ResponseEntity<Formulario> getFormulario(@PathVariable("id") Long id) {
+        try {
+            Formulario formulario  = formularioService.getById(id);
+            return ResponseEntity.ok().body(formulario);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @GetMapping(path = "/formulario/all")
-    public @ResponseBody List<Formulario> getAllFormularios() {
+    public @ResponseBody
+    List<Formulario> getAllFormularios() {
         return formularioService.getAll();
+    }
+
+    @GetMapping(path = "/evento/{id}")
+    public @ResponseBody ResponseEntity<Evento> getEvento(@PathVariable("id") Long id) {
+        try {
+            Evento evento  = eventoService.getById(id);
+            return ResponseEntity.ok().body(evento);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping(path = "/evento/all")
+    public @ResponseBody List<Evento> getAllEventos() {
+        return eventoService.getAll();
     }
 
 }

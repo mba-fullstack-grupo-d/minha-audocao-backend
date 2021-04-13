@@ -4,6 +4,7 @@ import br.com.minhaudocao.adote.entity.Endereco;
 import br.com.minhaudocao.adote.entity.Instituicao;
 import br.com.minhaudocao.adote.entity.Pessoa;
 import br.com.minhaudocao.adote.entity.Pet;
+import br.com.minhaudocao.adote.exception.ResourceNotFoundException;
 import br.com.minhaudocao.adote.repository.EnderecoRepository;
 import br.com.minhaudocao.adote.repository.InstituicaoRepository;
 import br.com.minhaudocao.adote.repository.PetRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PetService {
@@ -56,6 +58,16 @@ public class PetService {
     @Transactional
     public List<Pet> getAll(){
         return petRepository.findAll();
+    }
+
+    @Transactional
+    public Pet getById(Long id) throws ResourceNotFoundException {
+        Optional<Pet> pet =  petRepository.findById(id);
+        if(pet.isPresent()){
+            return pet.get();
+        }else{
+            throw new ResourceNotFoundException("Pet com ID " + id + " não encontrado");
+        }
     }
 
 }

@@ -1,6 +1,7 @@
 package br.com.minhaudocao.adote.service;
 
 import br.com.minhaudocao.adote.entity.*;
+import br.com.minhaudocao.adote.exception.ResourceNotFoundException;
 import br.com.minhaudocao.adote.repository.DataRepository;
 import br.com.minhaudocao.adote.repository.EnderecoRepository;
 import br.com.minhaudocao.adote.repository.EventoRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EventoService {
@@ -80,6 +82,16 @@ public class EventoService {
     @Transactional
     public List<Evento> getAll() {
         return eventoRepository.findAll();
+    }
+
+    @Transactional
+    public Evento getById(Long id) throws ResourceNotFoundException {
+        Optional<Evento> evento =  eventoRepository.findById(id);
+        if(evento.isPresent()){
+            return evento.get();
+        }else{
+            throw new ResourceNotFoundException("Evento com ID " + id + " não encontrado");
+        }
     }
 
 }

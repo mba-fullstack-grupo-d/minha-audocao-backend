@@ -3,6 +3,7 @@ package br.com.minhaudocao.adote.service;
 import br.com.minhaudocao.adote.entity.Endereco;
 import br.com.minhaudocao.adote.entity.Formulario;
 import br.com.minhaudocao.adote.entity.Instituicao;
+import br.com.minhaudocao.adote.exception.ResourceNotFoundException;
 import br.com.minhaudocao.adote.repository.EnderecoRepository;
 import br.com.minhaudocao.adote.repository.FormularioRepository;
 import br.com.minhaudocao.adote.repository.InstituicaoRepository;
@@ -10,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.Normalizer;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FormularioService {
@@ -57,5 +60,14 @@ public class FormularioService {
         return formularioRepository.findAll();
     }
 
+    @Transactional
+    public Formulario getById(Long id) throws ResourceNotFoundException {
+        Optional<Formulario> formulario =  formularioRepository.findById(id);
+        if(formulario.isPresent()){
+            return formulario.get();
+        }else{
+            throw new ResourceNotFoundException("Formulário com ID " + id + " não encontrado");
+        }
+    }
 
 }
