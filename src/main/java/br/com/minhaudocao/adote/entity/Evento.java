@@ -9,9 +9,9 @@ public class Evento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idevento")
     private Long id;
-
+    @Column(nullable = false)
     private String nome;
-
+    @Column(nullable = false)
     private String descricao;
 
     @ManyToOne

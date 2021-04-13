@@ -28,7 +28,7 @@ public class PetService {
     private EnderecoRepository enderecoRepository;
 
     @Transactional
-    public void save(Pet pet) {
+    public Pet save(Pet pet) {
         Instituicao instituicao = pet.getInstituicao();
         if(instituicao != null){
             Endereco endereco = instituicao.getEndereco();
@@ -52,7 +52,7 @@ public class PetService {
 
         }
 
-        petRepository.save(pet);
+        return petRepository.save(pet);
     }
 
     @Transactional
@@ -68,6 +68,11 @@ public class PetService {
         }else{
             throw new ResourceNotFoundException("Pet com ID " + id + " não encontrado");
         }
+    }
+
+    @Transactional
+    public void deleteAll(){
+        petRepository.deleteAll();
     }
 
 }

@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.Normalizer;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +27,7 @@ public class FormularioService {
     private EnderecoRepository enderecoRepository;
 
     @Transactional
-    public void save(Formulario formulario) {
+    public Formulario save(Formulario formulario) {
         Instituicao instituicao = formulario.getInstituicao();
         if (instituicao != null) {
             Endereco endereco = instituicao.getEndereco();
@@ -52,7 +51,7 @@ public class FormularioService {
 
         }
 
-        formularioRepository.save(formulario);
+        return formularioRepository.save(formulario);
     }
 
     @Transactional
@@ -68,6 +67,11 @@ public class FormularioService {
         }else{
             throw new ResourceNotFoundException("Formulário com ID " + id + " não encontrado");
         }
+    }
+
+    @Transactional
+    public void deleteAll(){
+        formularioRepository.deleteAll();
     }
 
 }

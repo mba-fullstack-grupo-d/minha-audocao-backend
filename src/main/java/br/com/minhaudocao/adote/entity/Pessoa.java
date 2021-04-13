@@ -14,14 +14,15 @@ public class Pessoa {
     @Column(name = "idpessoa")
     private Long idPessoa;
 
+    @Column(nullable = false)
     private String nome;
-
+    @Column(nullable = false)
     private String sobrenome;
-
+    @Column(nullable = false)
     private String email;
-
+    @Column(nullable = false)
     private String imagem;
-
+    @Column(nullable = false)
     private String senha;
 
     public Long getIdPessoa() {

@@ -6,23 +6,39 @@ import java.time.LocalDate;
 @Entity
 public class Data {
 
-    @EmbeddedId
-    private DataId dataId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "iddata")
+    private Long id;
 
+    @Column(nullable = false)
     private LocalDate data;
 
-    @Column(name = "hora_inicio")
+    @Column(name = "hora_inicio", nullable = false)
     private Integer horaInicio;
 
-    @Column(name = "hora_fim")
+    @Column(name = "hora_fim", nullable = false)
     private Integer horaFim;
 
-    public DataId getDataId() {
-        return dataId;
+    @ManyToOne
+    @JoinColumn(name = "idevento")
+    private Evento evento;
+
+
+    public Long getId() {
+        return id;
     }
 
-    public void setDataId(DataId dataId) {
-        this.dataId = dataId;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Evento getEvento() {
+        return evento;
+    }
+
+    public void setEvento(Evento evento) {
+        this.evento = evento;
     }
 
     public LocalDate getData() {

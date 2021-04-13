@@ -8,13 +8,13 @@ public class Formulario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idformulario")
     private Long id;
-
+    @Column(nullable = false)
     private String nome;
-
+    @Column(nullable = false)
     private String tipo;
-
+    @Column(nullable = false)
     private Boolean obrigatorio;
-
+    @Column(nullable = false)
     private Integer ordem;
 
     @ManyToOne

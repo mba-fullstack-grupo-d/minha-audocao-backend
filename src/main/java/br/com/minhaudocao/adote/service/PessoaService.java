@@ -17,8 +17,8 @@ public class PessoaService {
     private PessoaRepository pessoaRepository;
 
     @Transactional
-    public void save(Pessoa pessoa) {
-        pessoaRepository.save(pessoa);
+    public Pessoa save(Pessoa pessoa) {
+        return pessoaRepository.save(pessoa);
     }
 
     @Transactional
@@ -34,6 +34,11 @@ public class PessoaService {
         }else{
             throw new ResourceNotFoundException("Pessoa com ID " + id + " não encontrada");
         }
+    }
+
+    @Transactional
+    public void deleteAll(){
+        pessoaRepository.deleteAll();
     }
 
 }

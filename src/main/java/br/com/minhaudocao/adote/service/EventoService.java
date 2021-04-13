@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +30,7 @@ public class EventoService {
     private DataRepository dataRepository;
 
     @Transactional
-    public void save(Evento evento) {
+    public Evento save(Evento evento) {
         Instituicao instituicao = evento.getInstituicao();
         if (instituicao != null) {
             //Endereco da Instituicao, não é o endereco do evento
@@ -66,17 +67,17 @@ public class EventoService {
 
         List<Data> datas = evento.getDatas();
         if(datas != null){
-            List<Data> savedDatas = null;
+            List<Data> savedDatas = new LinkedList<>();
             for (Data data: datas) {
-                if(data.getDataId() != null){
-                    savedDatas.add(dataRepository.findById(data.getDataId()).get());
+                if(data.getId() != null){
+                    savedDatas.add(dataRepository.findById(data.getId()).get());
                 } else {
                     savedDatas.add(dataRepository.save(data));
                 }
             }
             evento.setDatas(savedDatas);
         }
-        eventoRepository.save(evento);
+        return eventoRepository.save(evento);
     }
 
     @Transactional
@@ -92,6 +93,11 @@ public class EventoService {
         }else{
             throw new ResourceNotFoundException("Evento com ID " + id + " não encontrado");
         }
+    }
+
+    @Transactional
+    public void deleteAll(){
+        eventoRepository.deleteAll();
     }
 
 }

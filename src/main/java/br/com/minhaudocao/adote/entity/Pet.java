@@ -15,15 +15,15 @@ public class Pet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idpet")
     private Long id;
-
+    @Column(nullable = false)
     private String nome;
-
+    @Column(nullable = false)
     private String especie;
-
+    @Column(nullable = false)
     private String descricao;
 
     private String imagem;
-
+    @Column(nullable = false)
     private Boolean adotado;
 
     private String raca;
@@ -34,11 +34,11 @@ public class Pet {
     @JoinColumn(name = "idinstituicao")
     private Instituicao instituicao;
 
-    public Integer getIdade(){
+    public Integer getIdade() {
         return idade;
     }
 
-    public void setIdade(Integer idade){
+    public void setIdade(Integer idade) {
         this.idade = idade;
     }
 
@@ -50,19 +50,19 @@ public class Pet {
         this.raca = raca;
     }
 
-    public Boolean getAdotado(){
+    public Boolean getAdotado() {
         return adotado;
     }
 
-    public void setAdotado(Boolean adotado){
+    public void setAdotado(Boolean adotado) {
         this.adotado = adotado;
     }
 
-    public Instituicao getInstituicao(){
+    public Instituicao getInstituicao() {
         return instituicao;
     }
 
-    public void setInstituicao(Instituicao instituicao){
+    public void setInstituicao(Instituicao instituicao) {
         this.instituicao = instituicao;
     }
 

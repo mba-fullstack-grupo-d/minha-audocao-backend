@@ -14,17 +14,17 @@ public class Instituicao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idinstituicao")
     private Long id;
-
+    @Column(nullable = false)
     private String nome;
-
+    @Column(nullable = false)
     private String descricao;
-
+    @Column(nullable = false)
     private String email;
-
+    @Column(nullable = false)
     private String senha;
-
+    @Column(nullable = false)
     private String telefone;
-    
+    @Column(nullable = false)
     private String imagem;
 
     @ManyToOne

@@ -23,7 +23,7 @@ public class InstituicaoService {
     private InstituicaoRepository instituicaoRepository;
 
     @Transactional
-    public void save(Instituicao instituicao) {
+    public Instituicao save(Instituicao instituicao) {
         Endereco endereco = instituicao.getEndereco();
         if (endereco != null) {
             Endereco savedEndereco = null;
@@ -34,7 +34,8 @@ public class InstituicaoService {
             }
             instituicao.setEndereco(savedEndereco);
         }
-        instituicaoRepository.save(instituicao);
+
+        return instituicaoRepository.save(instituicao);
     }
 
     @Transactional
@@ -50,6 +51,11 @@ public class InstituicaoService {
         }else{
             throw new ResourceNotFoundException("Instituição com ID " + id + " não encontrada");
         }
+    }
+
+    @Transactional
+    public void deleteAll(){
+        instituicaoRepository.deleteAll();
     }
 
 }
