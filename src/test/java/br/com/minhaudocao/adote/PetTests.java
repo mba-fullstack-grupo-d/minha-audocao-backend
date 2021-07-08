@@ -32,7 +32,6 @@ public class PetTests {
         pet.setAdotado(false);
         pet.setIdade(10);
         pet.setDescricao("Mascote do Minha Audoção");
-        pet.setImagem("imagem.jpg");
 
         Instituicao instituicao = new Instituicao();
         instituicao.setNome("Minha Audoção");
@@ -94,7 +93,6 @@ public class PetTests {
         novoPet.setAdotado(false);
         novoPet.setIdade(10);
         novoPet.setDescricao("Belo gatinho");
-        novoPet.setImagem("imagem.jpg");
         novoPet.setInstituicao(pet.getInstituicao());
         
         Pet savedPet = petService.save(pet);

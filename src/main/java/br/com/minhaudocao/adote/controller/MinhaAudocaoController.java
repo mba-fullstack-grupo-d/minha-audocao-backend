@@ -1,24 +1,29 @@
 package br.com.minhaudocao.adote.controller;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.Normalizer;
 import java.util.List;
-
 import br.com.minhaudocao.adote.entity.*;
 import br.com.minhaudocao.adote.exception.ResourceNotFoundException;
+import br.com.minhaudocao.adote.model.AuthenticationRequest;
+import br.com.minhaudocao.adote.model.AuthenticationResponse;
 import br.com.minhaudocao.adote.service.*;
+import br.com.minhaudocao.adote.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.multipart.MultipartFile;
 
-import br.com.minhaudocao.adote.repository.PessoaRepository;
-import br.com.minhaudocao.adote.repository.PetRepository;
+import javax.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping(path = "/api")
+@CrossOrigin(origins = "*")
+@RestController
 public class MinhaAudocaoController {
 
     @Autowired
@@ -38,6 +43,21 @@ public class MinhaAudocaoController {
 
     @Autowired
     private EventoService eventoService;
+
+    @Autowired
+    private S3Service s3Service;
+
+    @Autowired
+    private FotoService fotoService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtUtil jwtTokenUtil;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     @PostMapping(path = "/pessoa/add")
     public ResponseEntity<Pessoa> addNewUser(Pessoa pessoa) {
@@ -182,6 +202,53 @@ public class MinhaAudocaoController {
     @GetMapping(path = "/evento/all")
     public @ResponseBody List<Evento> getAllEventos() {
         return eventoService.getAll();
+    }
+
+    @PostMapping("/uploadFoto")
+    @ResponseBody
+    public ResponseEntity<String> uploadFile(@RequestPart(value = "file") MultipartFile file) {
+        try {
+            return ResponseEntity.ok().body(s3Service.uploadFile(file));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/deleteFoto")
+    @ResponseBody
+    public String deleteFile(@RequestPart(value = "url") String fileUrl) {
+        return this.s3Service.deleteFile(fileUrl);
+    }
+
+    @PostMapping("/fotopet/add")
+    public ResponseEntity<Foto> addNewFotoPet(@RequestBody Foto foto) {
+        try {
+            fotoService.save(foto);
+        } catch (Exception ex) {
+            System.out.println(ex.getStackTrace());
+            return ResponseEntity.badRequest().body(foto);
+        }
+        return ResponseEntity.ok().body(foto);
+    }
+
+    @PostMapping(value = "/authenticate")
+    public ResponseEntity<AuthenticationResponse> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
+
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
+            );
+        }
+        catch (BadCredentialsException e) {
+            throw new Exception("Incorrect username or password", e);
+        }
+
+        final UserDetails userDetails = userDetailsService
+                .loadUserByUsername(authenticationRequest.getUsername());
+
+        final String jwt = jwtTokenUtil.generateToken(userDetails);
+
+        return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
 
 }

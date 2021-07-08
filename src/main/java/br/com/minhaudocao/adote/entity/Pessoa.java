@@ -1,10 +1,6 @@
 package br.com.minhaudocao.adote.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Pessoa {
@@ -24,6 +20,10 @@ public class Pessoa {
     private String imagem;
     @Column(nullable = false)
     private String senha;
+
+    @ManyToOne
+    @JoinColumn(name = "idendereco")
+    private Endereco endereco;
 
     public Long getIdPessoa() {
         return idPessoa;
@@ -71,5 +71,13 @@ public class Pessoa {
 
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    public Endereco getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(Endereco endereco) {
+        this.endereco = endereco;
     }
 }

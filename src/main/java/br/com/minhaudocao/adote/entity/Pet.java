@@ -22,7 +22,6 @@ public class Pet {
     @Column(nullable = false)
     private String descricao;
 
-    private String imagem;
     @Column(nullable = false)
     private Boolean adotado;
 
@@ -82,14 +81,6 @@ public class Pet {
         this.nome = nome;
     }
 
-    public String getImagem() {
-        return imagem;
-    }
-
-    public void setImagem(String imagem) {
-        this.imagem = imagem;
-    }
-
     public String getEspecie() {
         return especie;
     }
@@ -113,7 +104,6 @@ public class Pet {
                 ", nome='" + nome + '\'' +
                 ", especie='" + especie + '\'' +
                 ", descricao='" + descricao + '\'' +
-                ", imagem='" + imagem + '\'' +
                 ", adotado=" + adotado +
                 ", raca='" + raca + '\'' +
                 ", idade=" + idade +
