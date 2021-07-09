@@ -9,10 +9,14 @@ import br.com.minhaudocao.adote.model.AuthenticationResponse;
 import br.com.minhaudocao.adote.service.*;
 import br.com.minhaudocao.adote.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
@@ -60,6 +64,7 @@ public class MinhaAudocaoController {
     @Autowired
     private UserDetailsService userDetailsService;
 
+
     @PostMapping(path = "/pessoa/add")
     public ResponseEntity<Pessoa> addNewUser(@RequestBody Pessoa pessoa) {
         try {
@@ -76,6 +81,7 @@ public class MinhaAudocaoController {
     }
 
     @PostMapping("/pet/add")
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ADMIN')")
     public ResponseEntity<Pet> addNewPet(@RequestBody Pet pet) {
         try {
             petService.save(pet);
@@ -113,6 +119,7 @@ public class MinhaAudocaoController {
     }
 
     @PostMapping("/formulario/add")
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ADMIN')")
     public ResponseEntity<Formulario> addNewFormulario(@RequestBody Formulario formulario) {
         try {
             formularioService.save(formulario);
@@ -124,6 +131,7 @@ public class MinhaAudocaoController {
     }
 
     @PostMapping("/evento/add")
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ADMIN')")
     public ResponseEntity<Evento> addNewEvento(@RequestBody Evento evento) {
         try {
             eventoService.save(evento);
@@ -135,6 +143,7 @@ public class MinhaAudocaoController {
     }
 
     @GetMapping(path = "/pessoa/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<Pessoa> getPessoa(@PathVariable("id") Long id) {
         try {
             Pessoa pessoa = pessoaService.getById(id);
@@ -145,6 +154,7 @@ public class MinhaAudocaoController {
     }
 
     @GetMapping(path = "/pessoa/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public @ResponseBody
     List<Pessoa> getAllUsers() {
         return pessoaService.getAll();
@@ -183,6 +193,7 @@ public class MinhaAudocaoController {
     }
 
     @GetMapping(path = "/formulario/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('INSTITUICAO') or hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<Formulario> getFormulario(@PathVariable("id") Long id) {
         try {
             Formulario formulario  = formularioService.getById(id);
@@ -193,6 +204,7 @@ public class MinhaAudocaoController {
     }
 
     @GetMapping(path = "/formulario/all")
+    @PreAuthorize("hasRole('USER') or hasRole('INSTITUICAO') or hasRole('ADMIN')")
     public @ResponseBody
     List<Formulario> getAllFormularios() {
         return formularioService.getAll();
@@ -214,6 +226,7 @@ public class MinhaAudocaoController {
     }
 
     @PostMapping("/uploadFoto")
+    @PreAuthorize("hasRole('USER') or hasRole('INSTITUICAO') or hasRole('ADMIN')")
     @ResponseBody
     public ResponseEntity<String> uploadFile(@RequestPart(value = "file") MultipartFile file) {
         try {
@@ -224,12 +237,14 @@ public class MinhaAudocaoController {
     }
 
     @DeleteMapping("/deleteFoto")
+    @PreAuthorize("hasRole('USER') or hasRole('INSTITUICAO') or hasRole('ADMIN')")
     @ResponseBody
     public String deleteFile(@RequestPart(value = "url") String fileUrl) {
         return this.s3Service.deleteFile(fileUrl);
     }
 
     @PostMapping("/fotopet/add")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Foto> addNewFotoPet(@RequestBody Foto foto) {
         try {
             fotoService.save(foto);
@@ -244,20 +259,17 @@ public class MinhaAudocaoController {
     public ResponseEntity<AuthenticationResponse> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
 
         try {
-            authenticationManager.authenticate(
+            Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
             );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
+            String jwt = jwtTokenUtil.generateToken(userPrincipal);
+            return ResponseEntity.ok(new AuthenticationResponse(jwt));
         }
         catch (BadCredentialsException e) {
-            throw new Exception("Incorrect username or password", e);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthenticationResponse("Senha ou Email incorretos"));
         }
-
-        final UserDetails userDetails = userDetailsService
-                .loadUserByUsername(authenticationRequest.getUsername());
-
-        final String jwt = jwtTokenUtil.generateToken(userDetails);
-
-        return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
 
 }

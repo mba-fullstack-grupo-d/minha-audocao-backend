@@ -1,15 +1,13 @@
 package br.com.minhaudocao.adote.util;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -19,11 +17,6 @@ public class JwtUtil {
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
-    }
-
-    public List extractAuthorities(String token) {
-        final Claims claims = extractAllClaims(token);
-        return claims.get("roles", List.class);
     }
 
     public Date extractExpiration(String token) {
@@ -49,21 +42,27 @@ public class JwtUtil {
     private String createToken(String subject, Collection<? extends GrantedAuthority> authorities) {
         return Jwts.builder()
                 .setSubject(subject)
-                .claim("roles", authorities.stream().collect(Collectors.toList()))
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        List authorities = extractAuthorities(token);
-        System.out.println("Authorities token:");
-        authorities.stream().forEach(System.out::println);
-        System.out.println("Authorities userDetail:");
-        userDetails.getAuthorities().stream().forEach(System.out::println);
-        return (username.equals(userDetails.getUsername())
-                && userDetails.getAuthorities().stream().anyMatch(authorities::contains)
-                && !isTokenExpired(token));
+        try {
+            Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
+            return true;
+        } catch (SignatureException e) {
+            System.out.println("Invalid JWT signature: " + e.getMessage());
+        } catch (MalformedJwtException e) {
+            System.out.println("Invalid JWT token: "+ e.getMessage());
+        } catch (ExpiredJwtException e) {
+            System.out.println("JWT token is expired: "+ e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            System.out.println("JWT token is unsupported: "+ e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println("JWT claims string is empty: "+ e.getMessage());
+        }
+
+        return false;
     }
 }
