@@ -54,10 +54,28 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable().authorizeRequests()
-                .antMatchers("/api/authenticate").permitAll()
+                .antMatchers("/api/deleteFoto").hasAnyRole("USER", "INSTITUICAO", "ADMIN")
+                .antMatchers("/api/endereco/add").permitAll()
+                .antMatchers("/api/evento/{id}").permitAll()
+                .antMatchers("/api/evento/add").hasAnyRole("INSTITUICAO", "ADMIN")
+                .antMatchers("/api/evento/all").permitAll()
+                .antMatchers("/api/formulario/{id}").hasAnyRole("USER", "INSTITUICAO", "ADMIN")
+                .antMatchers("/api/formulario/add").hasAnyRole("INSTITUICAO", "ADMIN")
+                .antMatchers("/api/formulario/all").hasAnyRole("USER", "INSTITUICAO", "ADMIN")
+                .antMatchers("/api/instituicao/{id}").permitAll()
+                .antMatchers("/api/instituicao/add").permitAll()
+                .antMatchers("/api/instituicao/all").permitAll()
+                .antMatchers("/api/pessoa/{id}").permitAll()
+                .antMatchers("/api/pessoa/add").permitAll()
+                .antMatchers("/api/pessoa/all").hasRole("ADMIN")
+                .antMatchers("/api/pet/{id}").permitAll()
+                .antMatchers("/api/pet/add").hasAnyRole("INSTITUICAO", "ADMIN")
                 .antMatchers("/api/pet/all").permitAll()
-                .anyRequest().authenticated().and().
-                exceptionHandling().and().sessionManagement()
+                .antMatchers("/api/authenticate").permitAll()
+                .antMatchers("/api/uploadFoto").hasAnyRole("USER", "INSTITUICAO", "ADMIN")
+                .anyRequest().hasRole("ADMIN")
+//                .anyRequest().permitAll()
+                .and().exceptionHandling().and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }

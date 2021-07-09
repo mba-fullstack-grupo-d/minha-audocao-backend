@@ -1,12 +1,15 @@
 package br.com.minhaudocao.adote.service;
 
-import br.com.minhaudocao.adote.entity.Endereco;
-import br.com.minhaudocao.adote.entity.Instituicao;
-import br.com.minhaudocao.adote.entity.Pet;
+import br.com.minhaudocao.adote.entity.*;
+import br.com.minhaudocao.adote.exception.EmailExistsException;
 import br.com.minhaudocao.adote.exception.ResourceNotFoundException;
+import br.com.minhaudocao.adote.repository.AuthoritiesRepository;
 import br.com.minhaudocao.adote.repository.EnderecoRepository;
 import br.com.minhaudocao.adote.repository.InstituicaoRepository;
+import br.com.minhaudocao.adote.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +25,22 @@ public class InstituicaoService {
     @Autowired
     private InstituicaoRepository instituicaoRepository;
 
+    @Autowired
+    private UsersRepository usersRepository;
+
+    @Autowired
+    private AuthoritiesRepository authoritiesRepository;
+
+    @Autowired
+    private PasswordEncoder encoder;
+
     @Transactional
-    public Instituicao save(Instituicao instituicao) {
+    public Instituicao save(Instituicao instituicao) throws EmailExistsException {
+        if(usersRepository.findById(instituicao.getEmail()).isPresent()){
+            throw new EmailExistsException("Email já cadastrado");
+        }
+
+
         Endereco endereco = instituicao.getEndereco();
         if (endereco != null) {
             Endereco savedEndereco = null;
@@ -34,6 +51,23 @@ public class InstituicaoService {
             }
             instituicao.setEndereco(savedEndereco);
         }
+        Users user = new Users();
+
+        user.setUsername(instituicao.getEmail());
+        user.setPassword(encoder.encode(instituicao.getSenha()));
+        user.setEnabled(true);
+        instituicao.setSenha("");
+
+        Users savedUser = usersRepository.saveAndFlush(user);
+
+        Authorities authority = new Authorities();
+        AuthoritiesPK authorityPK = new AuthoritiesPK();
+        authorityPK.setUsers(savedUser);
+        authorityPK.setAuthority("ROLE_INSTITUICAO");
+        authority.setId(authorityPK);
+
+        authoritiesRepository.saveAndFlush(authority);
+
 
         return instituicaoRepository.save(instituicao);
     }

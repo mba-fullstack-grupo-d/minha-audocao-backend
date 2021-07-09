@@ -1,12 +1,11 @@
 package br.com.minhaudocao.adote.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Pet {
@@ -32,6 +31,9 @@ public class Pet {
     @ManyToOne
     @JoinColumn(name = "idinstituicao")
     private Instituicao instituicao;
+
+    @Transient
+    private ArrayList<MultipartFile> fotos;
 
     public Integer getIdade() {
         return idade;
@@ -95,6 +97,14 @@ public class Pet {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public ArrayList<MultipartFile> getFotos() {
+        return fotos;
+    }
+
+    public void setFotos(ArrayList<MultipartFile> fotos) {
+        this.fotos = fotos;
     }
 
     @Override

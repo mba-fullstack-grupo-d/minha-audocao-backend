@@ -1,16 +1,12 @@
 package br.com.minhaudocao.adote.service;
 
-import br.com.minhaudocao.adote.entity.Endereco;
-import br.com.minhaudocao.adote.entity.Instituicao;
-import br.com.minhaudocao.adote.entity.Pessoa;
-import br.com.minhaudocao.adote.entity.Pet;
+import br.com.minhaudocao.adote.entity.*;
 import br.com.minhaudocao.adote.exception.ResourceNotFoundException;
-import br.com.minhaudocao.adote.repository.EnderecoRepository;
-import br.com.minhaudocao.adote.repository.InstituicaoRepository;
-import br.com.minhaudocao.adote.repository.PetRepository;
+import br.com.minhaudocao.adote.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +22,12 @@ public class PetService {
 
     @Autowired
     private EnderecoRepository enderecoRepository;
+
+    @Autowired
+    private S3RepositoryImpl s3Repository;
+
+    @Autowired
+    private FotoRepository fotoRepository;
 
     @Transactional
     public Pet save(Pet pet) {
@@ -52,7 +54,18 @@ public class PetService {
 
         }
 
-        return petRepository.save(pet);
+        Pet savedPet =  petRepository.save(pet);
+
+        if(pet.getFotos() != null){
+            for (MultipartFile foto: pet.getFotos()) {
+                Foto uriFoto = new Foto();
+                uriFoto.setUriFoto(s3Repository.uploadFileTos3bucket(foto));
+                uriFoto.setPet(savedPet);
+                fotoRepository.save(uriFoto);
+            }
+        }
+
+        return savedPet;
     }
 
     @Transactional

@@ -66,30 +66,41 @@ public class EventoService {
         }
 
         List<Data> datas = evento.getDatas();
+        Evento savedEvento = eventoRepository.saveAndFlush(evento);
+
         if(datas != null){
             List<Data> savedDatas = new LinkedList<>();
             for (Data data: datas) {
                 if(data.getId() != null){
                     savedDatas.add(dataRepository.findById(data.getId()).get());
                 } else {
+                    data.setIdEvento(savedEvento.getId());
                     savedDatas.add(dataRepository.save(data));
                 }
             }
-            evento.setDatas(savedDatas);
+            savedEvento.setDatas(savedDatas);
         }
-        return eventoRepository.save(evento);
+        return savedEvento;
     }
 
     @Transactional
     public List<Evento> getAll() {
-        return eventoRepository.findAll();
+        List<Evento> eventos = eventoRepository.findAll();
+
+        for (Evento evento: eventos) {
+            evento.setDatas(dataRepository.findByIdEvento(evento.getId()));
+        }
+
+        return eventos;
     }
 
     @Transactional
     public Evento getById(Long id) throws ResourceNotFoundException {
         Optional<Evento> evento =  eventoRepository.findById(id);
         if(evento.isPresent()){
-            return evento.get();
+            Evento foundEvento = evento.get();
+            foundEvento.setDatas(dataRepository.findByIdEvento(foundEvento.getId()));
+            return foundEvento;
         }else{
             throw new ResourceNotFoundException("Evento com ID " + id + " não encontrado");
         }

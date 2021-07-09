@@ -15,14 +15,13 @@ public class Data {
     private LocalDate data;
 
     @Column(name = "hora_inicio", nullable = false)
-    private Integer horaInicio;
+    private String horaInicio;
 
     @Column(name = "hora_fim", nullable = false)
-    private Integer horaFim;
+    private String horaFim;
 
-    @ManyToOne
-    @JoinColumn(name = "idevento")
-    private Evento evento;
+    @Column(name = "idevento")
+    private Long idEvento;
 
 
     public Long getId() {
@@ -33,12 +32,12 @@ public class Data {
         this.id = id;
     }
 
-    public Evento getEvento() {
-        return evento;
+    public Long getIdEvento() {
+        return idEvento;
     }
 
-    public void setEvento(Evento evento) {
-        this.evento = evento;
+    public void setIdEvento(Long idEvento) {
+        this.idEvento = idEvento;
     }
 
     public LocalDate getData() {
@@ -49,19 +48,19 @@ public class Data {
         this.data = data;
     }
 
-    public Integer getHoraInicio() {
+    public String getHoraInicio() {
         return horaInicio;
     }
 
-    public void setHoraInicio(Integer horaInicio) {
+    public void setHoraInicio(String horaInicio) {
         this.horaInicio = horaInicio;
     }
 
-    public Integer getHoraFim() {
+    public String getHoraFim() {
         return horaFim;
     }
 
-    public void setHoraFim(Integer horaFim) {
+    public void setHoraFim(String horaFim) {
         this.horaFim = horaFim;
     }
 }

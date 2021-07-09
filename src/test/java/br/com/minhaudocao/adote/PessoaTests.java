@@ -1,7 +1,10 @@
 package br.com.minhaudocao.adote;
 
 import br.com.minhaudocao.adote.entity.Pessoa;
+import br.com.minhaudocao.adote.exception.EmailExistsException;
 import br.com.minhaudocao.adote.exception.ResourceNotFoundException;
+import br.com.minhaudocao.adote.repository.AuthoritiesRepository;
+import br.com.minhaudocao.adote.repository.UsersRepository;
 import br.com.minhaudocao.adote.service.PessoaService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -20,6 +23,12 @@ class PessoaTests {
 	@Autowired
 	private PessoaService pessoaService;
 
+	@Autowired
+	private UsersRepository usersRepository;
+
+	@Autowired
+	private AuthoritiesRepository authoritiesRepository;
+
 	private Pessoa pessoa;
 
 	@BeforeEach
@@ -37,11 +46,19 @@ class PessoaTests {
 		if(pessoaService.getAll() != null){
 			pessoaService.deleteAll();
 		}
+		if(usersRepository.findAll() != null){
+			authoritiesRepository.deleteAll();
+			usersRepository.deleteAll();
+		}
 	}
 
 	@Test
 	public void savePessoaSuccess() {
-		pessoaService.save(pessoa);
+		try {
+			pessoaService.save(pessoa);
+		} catch (EmailExistsException e) {
+			e.printStackTrace();
+		}
 
 		assertNotNull(pessoaService.getAll());
 		assertEquals(pessoa.getNome(), pessoaService.getAll().get(0).getNome());
@@ -55,8 +72,14 @@ class PessoaTests {
 
 	@Test
 	public void getByIdSuccess(){
-		Pessoa savedPessoa = pessoaService.save(pessoa);
-		assertDoesNotThrow(() -> pessoaService.getById(savedPessoa.getIdPessoa()));
+		Pessoa savedPessoa = null;
+		try {
+			savedPessoa = pessoaService.save(pessoa);
+		} catch (EmailExistsException e) {
+			e.printStackTrace();
+		}
+		Pessoa finalSavedPessoa = savedPessoa;
+		assertDoesNotThrow(() -> pessoaService.getById(finalSavedPessoa.getIdPessoa()));
 	}
 
 	@Test

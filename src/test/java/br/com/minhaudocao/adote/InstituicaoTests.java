@@ -3,7 +3,10 @@ package br.com.minhaudocao.adote;
 import br.com.minhaudocao.adote.entity.Endereco;
 import br.com.minhaudocao.adote.entity.Instituicao;
 import br.com.minhaudocao.adote.entity.Pet;
+import br.com.minhaudocao.adote.exception.EmailExistsException;
 import br.com.minhaudocao.adote.exception.ResourceNotFoundException;
+import br.com.minhaudocao.adote.repository.AuthoritiesRepository;
+import br.com.minhaudocao.adote.repository.UsersRepository;
 import br.com.minhaudocao.adote.service.InstituicaoService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +22,12 @@ public class InstituicaoTests {
 
     @Autowired
     private InstituicaoService instituicaoService;
+
+    @Autowired
+    private UsersRepository usersRepository;
+
+    @Autowired
+    private AuthoritiesRepository authoritiesRepository;
 
     private Instituicao instituicao;
 
@@ -47,11 +56,19 @@ public class InstituicaoTests {
         if(instituicaoService.getAll() != null){
             instituicaoService.deleteAll();
         }
+        if(usersRepository.findAll() != null){
+            authoritiesRepository.deleteAll();
+            usersRepository.deleteAll();
+        }
     }
 
     @Test
     public void saveInstituicaoSuccess() {
-        instituicaoService.save(instituicao);
+        try {
+            instituicaoService.save(instituicao);
+        } catch (EmailExistsException e) {
+            e.printStackTrace();
+        }
 
         assertNotNull(instituicaoService.getAll());
         assertEquals(instituicao.getNome(), instituicaoService.getAll().get(0).getNome());
@@ -65,8 +82,15 @@ public class InstituicaoTests {
 
     @Test
     public void getByIdSuccess(){
-        Instituicao savedInstituicao = instituicaoService.save(instituicao);
-        assertDoesNotThrow(() -> instituicaoService.getById(savedInstituicao.getId()));
+        Instituicao savedInstituicao = null;
+        try {
+            savedInstituicao = instituicaoService.save(instituicao);
+            Instituicao finalSavedInstituicao = savedInstituicao;
+            assertDoesNotThrow(() -> instituicaoService.getById(finalSavedInstituicao.getId()));
+        } catch (EmailExistsException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Test

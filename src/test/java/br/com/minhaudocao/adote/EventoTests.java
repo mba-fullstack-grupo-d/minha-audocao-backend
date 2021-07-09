@@ -58,13 +58,13 @@ public class EventoTests {
 
         Data data1 = new Data();
         data1.setData(LocalDate.now());
-        data1.setHoraInicio(8);
-        data1.setHoraFim(10);
+        data1.setHoraInicio("8");
+        data1.setHoraFim("10");
 
         Data data2 = new Data();
         data2.setData(LocalDate.of(2021,5,1));
-        data2.setHoraInicio(10);
-        data2.setHoraFim(14);
+        data2.setHoraInicio("10");
+        data2.setHoraFim("14");
 
         List<Data> datas = List.of(data1, data2);
         evento.setDatas(datas);

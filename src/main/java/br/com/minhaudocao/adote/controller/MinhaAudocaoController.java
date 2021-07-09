@@ -2,6 +2,7 @@ package br.com.minhaudocao.adote.controller;
 
 import java.util.List;
 import br.com.minhaudocao.adote.entity.*;
+import br.com.minhaudocao.adote.exception.EmailExistsException;
 import br.com.minhaudocao.adote.exception.ResourceNotFoundException;
 import br.com.minhaudocao.adote.model.AuthenticationRequest;
 import br.com.minhaudocao.adote.model.AuthenticationResponse;
@@ -60,11 +61,15 @@ public class MinhaAudocaoController {
     private UserDetailsService userDetailsService;
 
     @PostMapping(path = "/pessoa/add")
-    public ResponseEntity<Pessoa> addNewUser(Pessoa pessoa) {
+    public ResponseEntity<Pessoa> addNewUser(@RequestBody Pessoa pessoa) {
         try {
             pessoaService.save(pessoa);
+        } catch (EmailExistsException e){
+            Pessoa response = new Pessoa();
+            response.setEmail(pessoa.getEmail() + " já usado");
+            return ResponseEntity.badRequest().body(response);
         } catch (Exception ex) {
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
             return ResponseEntity.badRequest().body(pessoa);
         }
         return ResponseEntity.ok().body(pessoa);
@@ -75,7 +80,7 @@ public class MinhaAudocaoController {
         try {
             petService.save(pet);
         } catch (Exception ex) {
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
             return ResponseEntity.badRequest().body(pet);
         }
         return ResponseEntity.ok().body(pet);
@@ -85,8 +90,12 @@ public class MinhaAudocaoController {
     public ResponseEntity<Instituicao> addNewInstituicao(@RequestBody Instituicao instituicao) {
         try {
             instituicaoService.save(instituicao);
+        } catch (EmailExistsException e){
+            Instituicao response = new Instituicao();
+            response.setEmail(instituicao.getEmail() + " já usado");
+            return ResponseEntity.badRequest().body(response);
         } catch (Exception ex) {
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
             return ResponseEntity.badRequest().body(instituicao);
         }
         return ResponseEntity.ok().body(instituicao);
@@ -97,7 +106,7 @@ public class MinhaAudocaoController {
         try {
             enderecoService.save(endereco);
         } catch (Exception ex) {
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
             return ResponseEntity.badRequest().body(endereco);
         }
         return ResponseEntity.ok().body(endereco);
@@ -108,7 +117,7 @@ public class MinhaAudocaoController {
         try {
             formularioService.save(formulario);
         } catch (Exception ex) {
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
             return ResponseEntity.badRequest().body(formulario);
         }
         return ResponseEntity.ok().body(formulario);
@@ -119,7 +128,7 @@ public class MinhaAudocaoController {
         try {
             eventoService.save(evento);
         } catch (Exception ex) {
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
             return ResponseEntity.badRequest().body(evento);
         }
         return ResponseEntity.ok().body(evento);
@@ -225,7 +234,7 @@ public class MinhaAudocaoController {
         try {
             fotoService.save(foto);
         } catch (Exception ex) {
-            System.out.println(ex.getStackTrace());
+            ex.printStackTrace();
             return ResponseEntity.badRequest().body(foto);
         }
         return ResponseEntity.ok().body(foto);

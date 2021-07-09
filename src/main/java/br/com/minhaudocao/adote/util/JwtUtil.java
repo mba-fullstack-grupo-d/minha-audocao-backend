@@ -3,13 +3,13 @@ package br.com.minhaudocao.adote.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -19,6 +19,11 @@ public class JwtUtil {
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public List extractAuthorities(String token) {
+        final Claims claims = extractAllClaims(token);
+        return claims.get("roles", List.class);
     }
 
     public Date extractExpiration(String token) {
@@ -38,19 +43,27 @@ public class JwtUtil {
     }
 
     public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails.getUsername());
+        return createToken(userDetails.getUsername(), userDetails.getAuthorities());
     }
 
-    private String createToken(Map<String, Object> claims, String subject) {
-
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+    private String createToken(String subject, Collection<? extends GrantedAuthority> authorities) {
+        return Jwts.builder()
+                .setSubject(subject)
+                .claim("roles", authorities.stream().collect(Collectors.toList()))
+                .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        List authorities = extractAuthorities(token);
+        System.out.println("Authorities token:");
+        authorities.stream().forEach(System.out::println);
+        System.out.println("Authorities userDetail:");
+        userDetails.getAuthorities().stream().forEach(System.out::println);
+        return (username.equals(userDetails.getUsername())
+                && userDetails.getAuthorities().stream().anyMatch(authorities::contains)
+                && !isTokenExpired(token));
     }
 }
