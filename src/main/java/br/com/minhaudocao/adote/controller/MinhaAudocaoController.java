@@ -6,6 +6,7 @@ import br.com.minhaudocao.adote.exception.EmailExistsException;
 import br.com.minhaudocao.adote.exception.ResourceNotFoundException;
 import br.com.minhaudocao.adote.model.AuthenticationRequest;
 import br.com.minhaudocao.adote.model.AuthenticationResponse;
+import br.com.minhaudocao.adote.model.PetSearchRequest;
 import br.com.minhaudocao.adote.service.*;
 import br.com.minhaudocao.adote.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping(path = "/api")
@@ -66,9 +66,11 @@ public class MinhaAudocaoController {
 
 
     @PostMapping(path = "/pessoa/add")
-    public ResponseEntity<Pessoa> addNewUser(@RequestBody Pessoa pessoa) {
+    public ResponseEntity<Pessoa> addNewUser(
+            @RequestPart("pessoa") Pessoa pessoa,
+            @RequestPart("foto") MultipartFile foto) {
         try {
-            pessoaService.save(pessoa);
+            pessoaService.save(pessoa, foto);
         } catch (EmailExistsException e){
             Pessoa response = new Pessoa();
             response.setEmail(pessoa.getEmail() + " já usado");
@@ -269,6 +271,48 @@ public class MinhaAudocaoController {
         }
         catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthenticationResponse("Senha ou Email incorretos"));
+        }
+    }
+
+    @GetMapping(path = "/evento/instituicao/{id}")
+    public @ResponseBody ResponseEntity<List<Evento>> getEventoByInstituicao(@PathVariable("id") Long id) {
+        try {
+            List<Evento> eventos = eventoService.getByInstituicao(id);
+            return ResponseEntity.ok().body(eventos);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping(path = "/pet/instituicao/{id}")
+    public @ResponseBody ResponseEntity<List<Pet>> getPetByInstituicao(@PathVariable("id") Long id) {
+        try {
+            List<Pet> pets = petService.getByInstituicao(id);
+            return ResponseEntity.ok().body(pets);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping(path = "/formulario/instituicao/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('INSTITUICAO') or hasRole('ADMIN')")
+    public @ResponseBody ResponseEntity<List<Formulario>> getFormularioByInstituicao(@PathVariable("id") Long id) {
+        try {
+            List<Formulario> forms = formularioService.getByInstituicao(id);
+            return ResponseEntity.ok().body(forms);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/pet/search")
+    public ResponseEntity<List<Pet>> searchPet(@RequestBody PetSearchRequest petSearch) {
+        try {
+            List<Pet> pets = petService.search(petSearch);
+            return ResponseEntity.ok().body(pets);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.badRequest().body(null);
         }
     }
 

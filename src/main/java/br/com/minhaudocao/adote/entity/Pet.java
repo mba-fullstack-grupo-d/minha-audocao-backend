@@ -24,7 +24,7 @@ public class Pet {
     @Column(nullable = false)
     private Boolean adotado;
 
-    private String raca;
+    private String genero;
 
     private Integer idade;
 
@@ -32,8 +32,15 @@ public class Pet {
     @JoinColumn(name = "idinstituicao")
     private Instituicao instituicao;
 
+    private Boolean vacinado;
+
+    private Boolean castrado;
+
     @Transient
     private ArrayList<MultipartFile> fotos;
+
+    @Transient
+    private ArrayList<String> uriFotos;
 
     public Integer getIdade() {
         return idade;
@@ -43,12 +50,12 @@ public class Pet {
         this.idade = idade;
     }
 
-    public String getRaca() {
-        return raca;
+    public String getGenero() {
+        return genero;
     }
 
-    public void setRaca(String raca) {
-        this.raca = raca;
+    public void setGenero(String genero) {
+        this.genero = genero;
     }
 
     public Boolean getAdotado() {
@@ -107,6 +114,34 @@ public class Pet {
         this.fotos = fotos;
     }
 
+    public ArrayList<String> getUriFotos() {
+        return uriFotos;
+    }
+
+    public void setUriFotos(ArrayList<String> uriFotos) {
+        this.uriFotos = uriFotos;
+    }
+
+    public void setUriFoto(String uriFoto) {
+        this.getUriFotos().add(uriFoto);
+    }
+
+    public Boolean getVacinado() {
+        return vacinado;
+    }
+
+    public void setVacinado(Boolean vacinado) {
+        this.vacinado = vacinado;
+    }
+
+    public Boolean getCastrado() {
+        return castrado;
+    }
+
+    public void setCastrado(Boolean castrado) {
+        this.castrado = castrado;
+    }
+
     @Override
     public String toString() {
         return "Pet{" +
@@ -115,7 +150,7 @@ public class Pet {
                 ", especie='" + especie + '\'' +
                 ", descricao='" + descricao + '\'' +
                 ", adotado=" + adotado +
-                ", raca='" + raca + '\'' +
+                ", genero='" + genero + '\'' +
                 ", idade=" + idade +
                 ", instituicao=" + instituicao +
                 '}';

@@ -74,4 +74,10 @@ public class FormularioService {
         formularioRepository.deleteAll();
     }
 
+    @Transactional
+    public List<Formulario> getByInstituicao(Long idInstituicao) {
+        Instituicao instituicao = new Instituicao();
+        instituicao.setId(idInstituicao);
+        return formularioRepository.findByInstituicao(instituicao);
+    }
 }

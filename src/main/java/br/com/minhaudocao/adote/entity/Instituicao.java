@@ -1,12 +1,8 @@
 package br.com.minhaudocao.adote.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.persistence.*;
 
 @Entity
 public class Instituicao {
@@ -30,6 +26,17 @@ public class Instituicao {
     @ManyToOne
     @JoinColumn(name = "idendereco")
     private Endereco endereco;
+
+    @Transient
+    private MultipartFile foto;
+
+    public MultipartFile getFoto() {
+        return foto;
+    }
+
+    public void setFoto(MultipartFile foto) {
+        this.foto = foto;
+    }
 
     public Endereco getEndereco(){
         return endereco;

@@ -24,6 +24,16 @@ public class Endereco {
 
     private Integer cep;
 
+    private String bairro;
+
+    public String getBairro() {
+        return bairro;
+    }
+
+    public void setBairro(String bairro) {
+        this.bairro = bairro;
+    }
+
     public Long getId() {
         return id;
     }

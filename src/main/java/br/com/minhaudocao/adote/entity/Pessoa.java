@@ -1,5 +1,7 @@
 package br.com.minhaudocao.adote.entity;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.persistence.*;
 
 @Entity
@@ -24,6 +26,17 @@ public class Pessoa {
     @ManyToOne
     @JoinColumn(name = "idendereco")
     private Endereco endereco;
+
+    @Transient
+    private MultipartFile foto;
+
+    public MultipartFile getFoto() {
+        return foto;
+    }
+
+    public void setFoto(MultipartFile foto) {
+        this.foto = foto;
+    }
 
     public Long getIdPessoa() {
         return idPessoa;

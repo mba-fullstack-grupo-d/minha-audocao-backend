@@ -107,6 +107,17 @@ public class EventoService {
     }
 
     @Transactional
+    public List<Evento> getByInstituicao(Long idInstituicao){
+        Instituicao instituicao = new Instituicao();
+        instituicao.setId(idInstituicao);
+        List<Evento> eventos = eventoRepository.findByInstituicao(instituicao);
+        for (Evento evento: eventos) {
+            evento.setDatas(dataRepository.findByIdEvento(evento.getId()));
+        }
+        return eventos;
+    }
+
+    @Transactional
     public void deleteAll(){
         eventoRepository.deleteAll();
     }

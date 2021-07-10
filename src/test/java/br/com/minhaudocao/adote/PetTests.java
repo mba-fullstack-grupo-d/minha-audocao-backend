@@ -27,7 +27,9 @@ public class PetTests {
     public void createPet(){
         pet = new Pet();
         pet.setNome("Carlito");
-        pet.setRaca("vira lata");
+        pet.setGenero("masculino");
+        pet.setCastrado(true);
+        pet.setVacinado(true);
         pet.setEspecie("cachorro");
         pet.setAdotado(false);
         pet.setIdade(10);
@@ -88,11 +90,13 @@ public class PetTests {
     public void differentPetSameInstituicao(){
         Pet novoPet = new Pet();
         novoPet.setNome("Roger");
-        novoPet.setRaca("vira lata");
+        novoPet.setGenero("masculino");
         novoPet.setEspecie("gato");
         novoPet.setAdotado(false);
         novoPet.setIdade(10);
         novoPet.setDescricao("Belo gatinho");
+        novoPet.setVacinado(true);
+        novoPet.setCastrado(true);
         novoPet.setInstituicao(pet.getInstituicao());
         
         Pet savedPet = petService.save(pet);

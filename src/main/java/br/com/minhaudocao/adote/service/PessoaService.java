@@ -3,15 +3,13 @@ package br.com.minhaudocao.adote.service;
 import br.com.minhaudocao.adote.entity.*;
 import br.com.minhaudocao.adote.exception.EmailExistsException;
 import br.com.minhaudocao.adote.exception.ResourceNotFoundException;
-import br.com.minhaudocao.adote.repository.AuthoritiesRepository;
-import br.com.minhaudocao.adote.repository.EnderecoRepository;
-import br.com.minhaudocao.adote.repository.PessoaRepository;
-import br.com.minhaudocao.adote.repository.UsersRepository;
+import br.com.minhaudocao.adote.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,8 +32,11 @@ public class PessoaService {
     @Autowired
     private PasswordEncoder encoder;
 
+    @Autowired
+    private S3RepositoryImpl s3Repository;
+
     @Transactional
-    public Pessoa save(Pessoa pessoa) throws EmailExistsException {
+    public Pessoa save(Pessoa pessoa, MultipartFile foto) throws EmailExistsException {
         if(usersRepository.findById(pessoa.getEmail()).isPresent()){
             throw new EmailExistsException("Email já cadastrado");
         }
@@ -68,7 +69,11 @@ public class PessoaService {
 
         authoritiesRepository.saveAndFlush(authority);
 
-        return pessoaRepository.save(pessoa);
+        if(foto != null){
+            pessoa.setImagem(s3Repository.uploadFileTos3bucket(foto));
+        }
+
+        return pessoaRepository.saveAndFlush(pessoa);
     }
 
     @Transactional

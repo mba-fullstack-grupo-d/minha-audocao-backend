@@ -3,10 +3,7 @@ package br.com.minhaudocao.adote.service;
 import br.com.minhaudocao.adote.entity.*;
 import br.com.minhaudocao.adote.exception.EmailExistsException;
 import br.com.minhaudocao.adote.exception.ResourceNotFoundException;
-import br.com.minhaudocao.adote.repository.AuthoritiesRepository;
-import br.com.minhaudocao.adote.repository.EnderecoRepository;
-import br.com.minhaudocao.adote.repository.InstituicaoRepository;
-import br.com.minhaudocao.adote.repository.UsersRepository;
+import br.com.minhaudocao.adote.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,6 +30,9 @@ public class InstituicaoService {
 
     @Autowired
     private PasswordEncoder encoder;
+
+    @Autowired
+    private S3RepositoryImpl s3Repository;
 
     @Transactional
     public Instituicao save(Instituicao instituicao) throws EmailExistsException {
@@ -68,6 +68,9 @@ public class InstituicaoService {
 
         authoritiesRepository.saveAndFlush(authority);
 
+        if(instituicao.getFoto() != null){
+            instituicao.setImagem(s3Repository.uploadFileTos3bucket(instituicao.getFoto()));
+        }
 
         return instituicaoRepository.save(instituicao);
     }
