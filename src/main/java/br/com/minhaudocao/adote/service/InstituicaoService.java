@@ -68,10 +68,6 @@ public class InstituicaoService {
 
         authoritiesRepository.saveAndFlush(authority);
 
-        if(instituicao.getFoto() != null){
-            instituicao.setImagem(s3Repository.uploadFileTos3bucket(instituicao.getFoto()));
-        }
-
         return instituicaoRepository.save(instituicao);
     }
 

@@ -36,7 +36,7 @@ public class PessoaService {
     private S3RepositoryImpl s3Repository;
 
     @Transactional
-    public Pessoa save(Pessoa pessoa, MultipartFile foto) throws EmailExistsException {
+    public Pessoa save(Pessoa pessoa) throws EmailExistsException {
         if(usersRepository.findById(pessoa.getEmail()).isPresent()){
             throw new EmailExistsException("Email já cadastrado");
         }
@@ -68,10 +68,6 @@ public class PessoaService {
         authority.setId(authorityPK);
 
         authoritiesRepository.saveAndFlush(authority);
-
-        if(foto != null){
-            pessoa.setImagem(s3Repository.uploadFileTos3bucket(foto));
-        }
 
         return pessoaRepository.saveAndFlush(pessoa);
     }

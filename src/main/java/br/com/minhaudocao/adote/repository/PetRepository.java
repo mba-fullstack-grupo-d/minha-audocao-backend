@@ -41,4 +41,46 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
             String genero,
             String especie
     );
+
+    public List<Pet> findByInstituicaoAndIdade(
+            Instituicao instituicao,
+            Integer idade
+    );
+
+    public List<Pet> findByInstituicaoAndEspecie(
+            Instituicao instituicao,
+            String especie
+    );
+
+    public List<Pet> findByInstituicaoAndGenero(
+            Instituicao instituicao,
+            String genero
+    );
+
+    public List<Pet> findByIdadeAndGenero(
+            Integer idade,
+            String genero
+    );
+
+    public List<Pet> findByIdadeAndEspecie(
+            Integer idade,
+            String especie
+    );
+
+    public List<Pet> findByGeneroAndEspecie(
+            String genero,
+            String especie
+    );
+
+    public List<Pet> findByIdade(
+            Integer idade
+    );
+
+    public List<Pet> findByEspecie(
+            String especie
+    );
+
+    public List<Pet> findByGenero(
+            String genero
+    );
 }

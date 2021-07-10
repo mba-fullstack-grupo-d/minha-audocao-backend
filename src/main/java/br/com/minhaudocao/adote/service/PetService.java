@@ -57,13 +57,12 @@ public class PetService {
 
         Pet savedPet =  petRepository.save(pet);
 
-        if(pet.getFotos() != null){
-            for (MultipartFile foto: pet.getFotos()) {
-                Foto uriFoto = new Foto();
-                uriFoto.setUriFoto(s3Repository.uploadFileTos3bucket(foto));
-                uriFoto.setPet(savedPet);
-                fotoRepository.save(uriFoto);
-                savedPet.setUriFoto(uriFoto.getUriFoto());
+        if(pet.getUriFotos() != null){
+            for (String uriFoto: pet.getUriFotos()) {
+                Foto foto = new Foto();
+                foto.setPet(savedPet);
+                foto.setUriFoto(uriFoto);
+                fotoRepository.save(foto);
             }
         }
 
@@ -144,49 +143,82 @@ public class PetService {
         if(petSearch.getEspecie() != null && petSearch.getGenero() != null && petSearch.getIdade() != null && instituicaos != null){
             for (Instituicao instituicao: instituicaos) {
                 if(pets == null){
-
+                    pets = petRepository.findByInstituicaoAndIdadeAndGeneroAndEspecie(instituicao, petSearch.getIdade(), petSearch.getGenero(), petSearch.getEspecie());
                 }else {
-
+                    pets.addAll(petRepository.findByInstituicaoAndIdadeAndGeneroAndEspecie(instituicao, petSearch.getIdade(), petSearch.getGenero(), petSearch.getEspecie()));
                 }
-                pets.addAll(petRepository.findByInstituicaoAndIdadeAndGeneroAndEspecie(instituicao, petSearch.getIdade(), petSearch.getGenero(), petSearch.getEspecie()));
             }
         }else if(instituicaos != null && petSearch.getEspecie() != null && petSearch.getGenero() != null){
             for (Instituicao instituicao: instituicaos) {
-                pets.addAll(petRepository.findByInstituicaoAndGeneroAndEspecie(instituicao, petSearch.getGenero(), petSearch.getEspecie()));
+                if(pets == null){
+                    pets = petRepository.findByInstituicaoAndGeneroAndEspecie(instituicao, petSearch.getGenero(), petSearch.getEspecie());
+                }else{
+                    pets.addAll(petRepository.findByInstituicaoAndGeneroAndEspecie(instituicao, petSearch.getGenero(), petSearch.getEspecie()));
+                }
             }
         }else if(instituicaos != null && petSearch.getEspecie() != null && petSearch.getIdade() != null){
             for (Instituicao instituicao: instituicaos) {
-                pets.addAll(petRepository.findByInstituicaoAndIdadeAndEspecie(instituicao, petSearch.getIdade(), petSearch.getEspecie()));
+                if(pets == null){
+                    pets = petRepository.findByInstituicaoAndIdadeAndEspecie(instituicao, petSearch.getIdade(), petSearch.getEspecie());
+                }else{
+                    pets.addAll(petRepository.findByInstituicaoAndIdadeAndEspecie(instituicao, petSearch.getIdade(), petSearch.getEspecie()));
+                }
             }
         }else if(instituicaos != null && petSearch.getGenero() != null && petSearch.getIdade() != null){
             for (Instituicao instituicao: instituicaos) {
-                pets.addAll(petRepository.findByInstituicaoAndIdadeAndGenero(instituicao, petSearch.getIdade(), petSearch.getGenero()));
+                if (pets == null) {
+                    pets = petRepository.findByInstituicaoAndIdadeAndGenero(instituicao, petSearch.getIdade(), petSearch.getGenero());
+                }else {
+                    pets.addAll(petRepository.findByInstituicaoAndIdadeAndGenero(instituicao, petSearch.getIdade(), petSearch.getGenero()));
+                }
             }
         }else if(petSearch.getGenero() != null && petSearch.getEspecie() != null && petSearch.getIdade() != null){
             pets = petRepository.findByIdadeAndGeneroAndEspecie(petSearch.getIdade(), petSearch.getGenero(), petSearch.getEspecie());
         }else if(instituicaos != null && petSearch.getIdade() != null){
-
+            for(Instituicao instituicao:instituicaos){
+                if (pets == null) {
+                    pets = petRepository.findByInstituicaoAndIdade(instituicao, petSearch.getIdade());
+                }else{
+                    pets.addAll(petRepository.findByInstituicaoAndIdade(instituicao, petSearch.getIdade()));
+                }
+            }
         }else if(instituicaos != null && petSearch.getEspecie() != null){
-
+            for(Instituicao instituicao:instituicaos){
+                if (pets == null) {
+                    pets = petRepository.findByInstituicaoAndEspecie(instituicao, petSearch.getEspecie());
+                }else{
+                    pets.addAll(petRepository.findByInstituicaoAndEspecie(instituicao, petSearch.getEspecie()));
+                }
+            }
         }else if(instituicaos != null && petSearch.getGenero() != null){
-
+            for (Instituicao instituicao:instituicaos) {
+                if (pets == null) {
+                    pets = petRepository.findByInstituicaoAndGenero(instituicao, petSearch.getGenero());
+                }else{
+                    pets.addAll(petRepository.findByInstituicaoAndGenero(instituicao, petSearch.getGenero()));
+                }
+            }
         }else if(petSearch.getIdade() != null && petSearch.getGenero() != null){
-
+            pets = petRepository.findByIdadeAndGenero(petSearch.getIdade(), petSearch.getGenero());
         }else if(petSearch.getIdade() != null && petSearch.getEspecie() != null){
-
+            pets = petRepository.findByIdadeAndEspecie(petSearch.getIdade(), petSearch.getEspecie());
         }else if(petSearch.getEspecie() != null && petSearch.getGenero() !=null){
-
+            pets = petRepository.findByGeneroAndEspecie(petSearch.getGenero(), petSearch.getEspecie());
         }else if(instituicaos != null){
-
+            for (Instituicao instituicao: instituicaos) {
+                if (pets == null) {
+                    pets = petRepository.findByInstituicao(instituicao);
+                }else{
+                    pets.addAll(petRepository.findByInstituicao(instituicao));
+                }
+            }
         }else if(petSearch.getIdade() != null){
-
+            pets = petRepository.findByIdade(petSearch.getIdade());
         }else if(petSearch.getEspecie() != null){
-
+            pets = petRepository.findByEspecie(petSearch.getEspecie());
         }else if(petSearch.getGenero() != null){
-
+            pets = petRepository.findByGenero(petSearch.getGenero());
         }
-
-
         return pets;
     }
 }

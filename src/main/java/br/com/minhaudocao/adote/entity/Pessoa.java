@@ -27,17 +27,6 @@ public class Pessoa {
     @JoinColumn(name = "idendereco")
     private Endereco endereco;
 
-    @Transient
-    private MultipartFile foto;
-
-    public MultipartFile getFoto() {
-        return foto;
-    }
-
-    public void setFoto(MultipartFile foto) {
-        this.foto = foto;
-    }
-
     public Long getIdPessoa() {
         return idPessoa;
     }

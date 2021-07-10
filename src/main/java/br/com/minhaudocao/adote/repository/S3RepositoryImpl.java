@@ -1,5 +1,6 @@
 package br.com.minhaudocao.adote.repository;
 
+import br.com.minhaudocao.adote.exception.PhotoNotUploadedException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
@@ -28,7 +29,7 @@ public class S3RepositoryImpl implements S3Repository {
 
 
     @Override
-    public String uploadFileTos3bucket(MultipartFile multipartFile) {
+    public String uploadFileTos3bucket(MultipartFile multipartFile) throws PhotoNotUploadedException {
         String fileUrl = "";
         try {
             File file = convertMultiPartToFile(multipartFile);
@@ -39,6 +40,7 @@ public class S3RepositoryImpl implements S3Repository {
             file.delete();
         } catch (Exception e) {
             e.printStackTrace();
+            throw new PhotoNotUploadedException("erro ao salvar foto");
         }
         return fileUrl;
     }
@@ -52,7 +54,8 @@ public class S3RepositoryImpl implements S3Repository {
 
 
     private File convertMultiPartToFile(MultipartFile file) throws IOException {
-        File convFile = new File(file.getOriginalFilename());
+        File dir = new File(System.getProperty("catalina.home"));
+        File convFile = new File(dir.getAbsolutePath() + File.separator, file.getOriginalFilename());
         FileOutputStream fos = new FileOutputStream(convFile);
         fos.write(file.getBytes());
         fos.close();

@@ -55,7 +55,7 @@ class PessoaTests {
 	@Test
 	public void savePessoaSuccess() {
 		try {
-			pessoaService.save(pessoa, null);
+			pessoaService.save(pessoa);
 		} catch (EmailExistsException e) {
 			e.printStackTrace();
 		}
@@ -67,14 +67,14 @@ class PessoaTests {
 	@Test
 	public void savePessoaFailure() {
 		pessoa.setNome(null);
-		assertThrows(DataIntegrityViolationException.class, ()-> pessoaService.save(pessoa, null));
+		assertThrows(DataIntegrityViolationException.class, ()-> pessoaService.save(pessoa));
 	}
 
 	@Test
 	public void getByIdSuccess(){
 		Pessoa savedPessoa = null;
 		try {
-			savedPessoa = pessoaService.save(pessoa, null);
+			savedPessoa = pessoaService.save(pessoa);
 		} catch (EmailExistsException e) {
 			e.printStackTrace();
 		}

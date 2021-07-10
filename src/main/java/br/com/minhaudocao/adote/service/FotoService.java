@@ -1,6 +1,7 @@
 package br.com.minhaudocao.adote.service;
 
 import br.com.minhaudocao.adote.entity.Foto;
+import br.com.minhaudocao.adote.exception.PhotoNotUploadedException;
 import br.com.minhaudocao.adote.repository.FotoRepository;
 import br.com.minhaudocao.adote.repository.S3RepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +19,6 @@ public class FotoService {
 
     @Transactional
     public Foto save(Foto foto) {
-
-        if(foto.getFoto() != null){
-            foto.setUriFoto(s3Repository.uploadFileTos3bucket(foto.getFoto()));
-        }
-
         return fotoRepository.save(foto);
     }
 

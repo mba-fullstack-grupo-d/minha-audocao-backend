@@ -36,8 +36,7 @@ public class Pet {
 
     private Boolean castrado;
 
-    @Transient
-    private ArrayList<MultipartFile> fotos;
+
 
     @Transient
     private ArrayList<String> uriFotos;
@@ -104,14 +103,6 @@ public class Pet {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
-    }
-
-    public ArrayList<MultipartFile> getFotos() {
-        return fotos;
-    }
-
-    public void setFotos(ArrayList<MultipartFile> fotos) {
-        this.fotos = fotos;
     }
 
     public ArrayList<String> getUriFotos() {

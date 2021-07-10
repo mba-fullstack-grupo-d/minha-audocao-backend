@@ -19,17 +19,6 @@ public class Foto {
     @JoinColumn(name = "idpet")
     private Pet pet;
 
-    @Transient
-    private MultipartFile foto;
-
-    public MultipartFile getFoto() {
-        return foto;
-    }
-
-    public void setFoto(MultipartFile foto) {
-        this.foto = foto;
-    }
-
     public Long getId() {
         return id;
     }

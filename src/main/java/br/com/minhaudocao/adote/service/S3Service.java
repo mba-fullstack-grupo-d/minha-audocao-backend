@@ -1,5 +1,6 @@
 package br.com.minhaudocao.adote.service;
 
+import br.com.minhaudocao.adote.exception.PhotoNotUploadedException;
 import br.com.minhaudocao.adote.exception.ResourceNotFoundException;
 import br.com.minhaudocao.adote.repository.S3RepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ public class S3Service {
     public String uploadFile(MultipartFile multipartFile) throws ResourceNotFoundException {
         try {
             return s3Repository.uploadFileTos3bucket(multipartFile);
-        } catch (Exception e) {
+        } catch (PhotoNotUploadedException e) {
             throw new ResourceNotFoundException("Erro ao salvar foto");
         }
     }

@@ -66,11 +66,9 @@ public class MinhaAudocaoController {
 
 
     @PostMapping(path = "/pessoa/add")
-    public ResponseEntity<Pessoa> addNewUser(
-            @RequestPart("pessoa") Pessoa pessoa,
-            @RequestPart("foto") MultipartFile foto) {
+    public ResponseEntity<Pessoa> addNewUser(@RequestBody Pessoa pessoa) {
         try {
-            pessoaService.save(pessoa, foto);
+            pessoaService.save(pessoa);
         } catch (EmailExistsException e){
             Pessoa response = new Pessoa();
             response.setEmail(pessoa.getEmail() + " já usado");
@@ -228,13 +226,12 @@ public class MinhaAudocaoController {
     }
 
     @PostMapping("/uploadFoto")
-    @PreAuthorize("hasRole('USER') or hasRole('INSTITUICAO') or hasRole('ADMIN')")
     @ResponseBody
     public ResponseEntity<String> uploadFile(@RequestPart(value = "file") MultipartFile file) {
         try {
             return ResponseEntity.ok().body(s3Service.uploadFile(file));
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -246,7 +243,6 @@ public class MinhaAudocaoController {
     }
 
     @PostMapping("/fotopet/add")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Foto> addNewFotoPet(@RequestBody Foto foto) {
         try {
             fotoService.save(foto);
