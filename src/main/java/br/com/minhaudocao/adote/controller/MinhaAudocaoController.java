@@ -312,4 +312,88 @@ public class MinhaAudocaoController {
         }
     }
 
+    @DeleteMapping("/pet/delete/{id}")
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ADMIN')")
+    public ResponseEntity<String> deletePet(@PathVariable("id") Long id){
+        try{
+            petService.delete(id);
+            return ResponseEntity.ok().body("Pet deletado com sucesso");
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/pessoa/delete/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<String> deletePessoa(@PathVariable("id") Long id){
+        try{
+            pessoaService.delete(id);
+            return ResponseEntity.ok().body("Pessoa deletada com sucesso");
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/evento/delete/{id}")
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ADMIN')")
+    public ResponseEntity<String> deleteEvento(@PathVariable("id") Long id){
+        try{
+            eventoService.delete(id);
+            return ResponseEntity.ok().body("Evento deletado com sucesso");
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/instituicao/delete/{id}")
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ADMIN')")
+    public ResponseEntity<String> deleteInstituicao(@PathVariable("id") Long id){
+        try{
+            instituicaoService.delete(id);
+            return ResponseEntity.ok().body("Instituicao deletada com sucesso");
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/data/delete/{id}")
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ADMIN')")
+    public ResponseEntity<String> deleteData(@PathVariable("id") Long id){
+        try{
+            eventoService.deleteData(id);
+            return ResponseEntity.ok().body("Data deletada com sucesso");
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/foto/delete/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<String> deleteFoto(@PathVariable("id") Long id){
+        try{
+            fotoService.deleteById(id);
+            return ResponseEntity.ok().body("Foto deletada com sucesso");
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/formulario/delete/{id}")
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ADMIN')")
+    public ResponseEntity<String> deleteFormulario(@PathVariable("id") Long id){
+        try{
+            formularioService.delete(id);
+            return ResponseEntity.ok().body("Formulario deletada com sucesso");
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class FotoService {
 
@@ -24,6 +26,15 @@ public class FotoService {
 
     @Transactional
     public void delete(Foto foto){
+        s3Repository.deleteFileFromS3Bucket(foto.getUriFoto());
         fotoRepository.deleteById(foto.getId());
+    }
+
+    @Transactional
+    public void deleteById(Long id){
+        Optional<Foto> toDelete = fotoRepository.findById(id);
+        toDelete.ifPresent(this::delete);
+
+
     }
 }

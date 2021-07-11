@@ -5,7 +5,6 @@ import br.com.minhaudocao.adote.exception.EmailExistsException;
 import br.com.minhaudocao.adote.exception.ResourceNotFoundException;
 import br.com.minhaudocao.adote.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +26,21 @@ public class InstituicaoService {
 
     @Autowired
     private AuthoritiesRepository authoritiesRepository;
+
+    @Autowired
+    private FormularioRepository formularioRepository;
+
+    @Autowired
+    private PetRepository petRepository;
+
+    @Autowired
+    private PetService petService;
+
+    @Autowired
+    private EventoRepository eventoRepository;
+
+    @Autowired
+    private EventoService eventoService;
 
     @Autowired
     private PasswordEncoder encoder;
@@ -91,5 +105,28 @@ public class InstituicaoService {
         instituicaoRepository.deleteAll();
     }
 
+    @Transactional
+    public void delete(Long id) throws ResourceNotFoundException {
+        Optional<Instituicao> optionalToDelete = instituicaoRepository.findById(id);
+        if(optionalToDelete.isPresent()){
+            List<Formulario> formularios = formularioRepository.findByInstituicao(optionalToDelete.get());
+            if(!formularios.isEmpty()){
+                for (Formulario formulario: formularios) {
+                    formularioRepository.delete(formulario);
+                }
+            }
+            List<Pet> pets = petRepository.findByInstituicao(optionalToDelete.get());
+            for (Pet pet:pets) {
+                petService.delete(pet.getId());
+            }
+            List<Evento> eventos = eventoRepository.findByInstituicao(optionalToDelete.get());
+            for (Evento evento: eventos){
+                eventoService.delete(evento.getId());
+            }
+            instituicaoRepository.delete(optionalToDelete.get());
+        }else{
+            throw new ResourceNotFoundException("Instituição não encontrada");
+        }
+    }
 }
 

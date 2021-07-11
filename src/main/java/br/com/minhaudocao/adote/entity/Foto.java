@@ -1,7 +1,5 @@
 package br.com.minhaudocao.adote.entity;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import javax.persistence.*;
 
 @Entity

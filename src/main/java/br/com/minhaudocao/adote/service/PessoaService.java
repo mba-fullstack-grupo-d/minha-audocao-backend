@@ -92,4 +92,21 @@ public class PessoaService {
         pessoaRepository.deleteAll();
     }
 
+    public void delete(Long id) throws ResourceNotFoundException {
+        Optional<Pessoa> toDelete = pessoaRepository.findById(id);
+        if(toDelete.isPresent()){
+            Pessoa pessoaToDelete = toDelete.get();
+            Optional<Users> userToDelete = usersRepository.findById(pessoaToDelete.getEmail());
+            List<Authorities> auths = authoritiesRepository.findByUsername(pessoaToDelete.getEmail());
+            for (Authorities auth:auths) {
+                authoritiesRepository.deleteById(auth.getId());
+            }
+            usersRepository.delete(userToDelete.get());
+            pessoaRepository.deleteById(id);
+        }else{
+            throw new ResourceNotFoundException("Pessoa não econtrada");
+        }
+
+
+    }
 }

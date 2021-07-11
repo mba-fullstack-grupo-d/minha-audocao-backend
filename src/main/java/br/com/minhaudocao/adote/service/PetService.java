@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PetService {
@@ -73,7 +75,10 @@ public class PetService {
     public List<Pet> getAll(){
         List<Pet> pets = petRepository.findAll();
         for (Pet pet:pets) {
-            pet.setUriFotos(fotoRepository.findByPet(pet));
+            ArrayList<Foto> fotos = fotoRepository.findByPet(pet);
+            if(!fotos.isEmpty()){
+                pet.setUriFotos(fotos.stream().map(Foto::getUriFoto).collect(Collectors.toList()));
+            }
         }
         return pets;
     }
@@ -83,7 +88,10 @@ public class PetService {
         Optional<Pet> pet =  petRepository.findById(id);
         if(pet.isPresent()){
             Pet foundPet = pet.get();
-            foundPet.setUriFotos(fotoRepository.findByPet(foundPet));
+            ArrayList<Foto> fotos = fotoRepository.findByPet(foundPet);
+            if(!fotos.isEmpty()){
+                foundPet.setUriFotos(fotos.stream().map(Foto::getUriFoto).collect(Collectors.toList()));
+            }
             return foundPet;
         }else{
             throw new ResourceNotFoundException("Pet com ID " + id + " não encontrado");
@@ -101,7 +109,10 @@ public class PetService {
         instituicao.setId(idInstituicao);
         List<Pet> pets = petRepository.findByInstituicao(instituicao);
         for (Pet pet:pets) {
-            pet.setUriFotos(fotoRepository.findByPet(pet));
+            ArrayList<Foto> fotos = fotoRepository.findByPet(pet);
+            if(!fotos.isEmpty()){
+                pet.setUriFotos(fotos.stream().map(Foto::getUriFoto).collect(Collectors.toList()));
+            }
         }
         return pets;
     }
@@ -220,5 +231,20 @@ public class PetService {
             pets = petRepository.findByGenero(petSearch.getGenero());
         }
         return pets;
+    }
+
+    public void delete(Long id) throws ResourceNotFoundException {
+        Optional<Pet> optionalToDelete = petRepository.findById(id);
+        if(optionalToDelete.isPresent()){
+            List<Foto> fotos = fotoRepository.findByPet(optionalToDelete.get());
+            if(!fotos.isEmpty()){
+                for (Foto foto: fotos) {
+                    fotoRepository.delete(foto);
+                }
+            }
+            petRepository.deleteById(id);
+        }else{
+            throw new ResourceNotFoundException("Pet não encontrado");
+        }
     }
 }

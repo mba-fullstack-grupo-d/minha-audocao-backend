@@ -39,7 +39,7 @@ public class Pet {
 
 
     @Transient
-    private ArrayList<String> uriFotos;
+    private List<String> uriFotos;
 
     public Integer getIdade() {
         return idade;
@@ -105,11 +105,11 @@ public class Pet {
         this.descricao = descricao;
     }
 
-    public ArrayList<String> getUriFotos() {
+    public List<String> getUriFotos() {
         return uriFotos;
     }
 
-    public void setUriFotos(ArrayList<String> uriFotos) {
+    public void setUriFotos(List<String> uriFotos) {
         this.uriFotos = uriFotos;
     }
 

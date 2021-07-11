@@ -8,5 +8,5 @@ import java.util.ArrayList;
 
 public interface FotoRepository extends JpaRepository<Foto, Long> {
 
-    public ArrayList<String> findByPet(Pet pet);
+    public ArrayList<Foto> findByPet(Pet pet);
 }

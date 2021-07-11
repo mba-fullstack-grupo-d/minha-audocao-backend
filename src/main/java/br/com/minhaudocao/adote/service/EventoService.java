@@ -122,4 +122,22 @@ public class EventoService {
         eventoRepository.deleteAll();
     }
 
+    public void delete(Long id) throws ResourceNotFoundException {
+        Optional<Evento> optionalToDelete = eventoRepository.findById(id);
+        if(optionalToDelete.isPresent()){
+            List<Data> datas = dataRepository.findByIdEvento(id);
+            if(!datas.isEmpty()){
+                for (Data data: datas) {
+                    dataRepository.delete(data);
+                }
+            }
+            dataRepository.deleteById(id);
+        }else{
+            throw new ResourceNotFoundException("Evento não encontrado");
+        }
+    }
+
+    public void deleteData(Long id) {
+        dataRepository.deleteById(id);
+    }
 }

@@ -80,4 +80,8 @@ public class FormularioService {
         instituicao.setId(idInstituicao);
         return formularioRepository.findByInstituicao(instituicao);
     }
+
+    public void delete(Long id) {
+        formularioRepository.deleteById(id);
+    }
 }
