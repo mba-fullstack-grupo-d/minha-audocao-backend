@@ -131,7 +131,7 @@ public class EventoService {
                     dataRepository.delete(data);
                 }
             }
-            dataRepository.deleteById(id);
+            eventoRepository.deleteById(id);
         }else{
             throw new ResourceNotFoundException("Evento não encontrado");
         }

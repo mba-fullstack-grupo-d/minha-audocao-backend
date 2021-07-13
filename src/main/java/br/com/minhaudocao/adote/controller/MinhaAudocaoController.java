@@ -243,6 +243,7 @@ public class MinhaAudocaoController {
     }
 
     @PostMapping("/fotopet/add")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Foto> addNewFotoPet(@RequestBody Foto foto) {
         try {
             fotoService.save(foto);
@@ -263,7 +264,9 @@ public class MinhaAudocaoController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
             String jwt = jwtTokenUtil.generateToken(userPrincipal);
-            return ResponseEntity.ok(new AuthenticationResponse(jwt));
+            AuthenticationResponse authenticationResponse = new AuthenticationResponse(jwt);
+            authenticationResponse.setRole(authentication.getAuthorities());
+            return ResponseEntity.ok(authenticationResponse);
         }
         catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthenticationResponse("Senha ou Email incorretos"));
