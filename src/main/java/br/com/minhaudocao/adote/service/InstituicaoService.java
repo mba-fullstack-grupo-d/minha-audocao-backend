@@ -3,6 +3,7 @@ package br.com.minhaudocao.adote.service;
 import br.com.minhaudocao.adote.entity.*;
 import br.com.minhaudocao.adote.exception.EmailExistsException;
 import br.com.minhaudocao.adote.exception.ResourceNotFoundException;
+import br.com.minhaudocao.adote.model.EventoInstituicaoSearchRequest;
 import br.com.minhaudocao.adote.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -127,6 +128,49 @@ public class InstituicaoService {
         }else{
             throw new ResourceNotFoundException("Instituição não encontrada");
         }
+    }
+
+    public Long getIdInstituicao(String email) throws ResourceNotFoundException {
+        Optional<Instituicao> optionalInstituicao = instituicaoRepository.findByEmail(email);
+        if(optionalInstituicao.isPresent()){
+            return optionalInstituicao.get().getId();
+        }else{
+            throw new ResourceNotFoundException("Instituição não encontrada");
+        }
+    }
+
+    public List<Instituicao> search(EventoInstituicaoSearchRequest search) {
+        List<Endereco> enderecos = null;
+        List<Instituicao> instituicaos = null;
+
+        if(search.getBairro() != null && search.getCidade() != null) {
+            enderecos = enderecoRepository.findByCidadeAndBairro(search.getCidade(), search.getBairro());
+        }else if(search.getBairro() != null){
+            enderecos = enderecoRepository.findByBairro(search.getBairro());
+        }else if(search.getCidade() != null){
+            enderecos = enderecoRepository.findByCidade(search.getCidade());
+        }
+
+        if(enderecos != null && search.getNome() != null){
+            for(Endereco endereco: enderecos){
+                if(instituicaos != null){
+                    instituicaos = instituicaoRepository.findByNomeAndEndereco(search.getNome(), endereco);
+                }else {
+                    instituicaos.addAll(instituicaoRepository.findByNomeAndEndereco(search.getNome(), endereco));
+                }
+            }
+        }else if(enderecos != null){
+            for(Endereco endereco: enderecos){
+                if(instituicaos != null){
+                    instituicaos = instituicaoRepository.findByEndereco(endereco);
+                }else {
+                    instituicaos.addAll(instituicaoRepository.findByEndereco(endereco));
+                }
+            }
+        }else if(search.getNome() != null){
+            instituicaos = instituicaoRepository.findByNome(search.getNome());
+        }
+        return instituicaos;
     }
 }
 

@@ -109,4 +109,13 @@ public class PessoaService {
 
 
     }
+
+    public Long getIdUser(String email) throws ResourceNotFoundException {
+        Optional<Pessoa> optionalPessoa = pessoaRepository.findByEmail(email);
+        if(optionalPessoa.isPresent()){
+            return optionalPessoa.get().getIdPessoa();
+        }else{
+            throw new ResourceNotFoundException("Pessoa não encontrada");
+        }
+    }
 }

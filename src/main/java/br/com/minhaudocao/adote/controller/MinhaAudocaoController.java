@@ -6,6 +6,7 @@ import br.com.minhaudocao.adote.exception.EmailExistsException;
 import br.com.minhaudocao.adote.exception.ResourceNotFoundException;
 import br.com.minhaudocao.adote.model.AuthenticationRequest;
 import br.com.minhaudocao.adote.model.AuthenticationResponse;
+import br.com.minhaudocao.adote.model.EventoInstituicaoSearchRequest;
 import br.com.minhaudocao.adote.model.PetSearchRequest;
 import br.com.minhaudocao.adote.service.*;
 import br.com.minhaudocao.adote.util.JwtUtil;
@@ -266,9 +267,14 @@ public class MinhaAudocaoController {
             String jwt = jwtTokenUtil.generateToken(userPrincipal);
             AuthenticationResponse authenticationResponse = new AuthenticationResponse(jwt);
             authenticationResponse.setRole(authentication.getAuthorities());
+            if(authenticationResponse.getRoles().get(0).equals("ROLE_USER")){
+                authenticationResponse.setId(pessoaService.getIdUser(userPrincipal.getUsername()));
+            }else{
+                authenticationResponse.setId(instituicaoService.getIdInstituicao(userPrincipal.getUsername()));
+            }
             return ResponseEntity.ok(authenticationResponse);
         }
-        catch (BadCredentialsException e) {
+        catch (BadCredentialsException | ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthenticationResponse("Senha ou Email incorretos"));
         }
     }
@@ -396,6 +402,28 @@ public class MinhaAudocaoController {
         }catch(Exception e){
             e.printStackTrace();
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/evento/search")
+    public ResponseEntity<List<Evento>> searchEvento(@RequestBody EventoInstituicaoSearchRequest search) {
+        try {
+            List<Evento> eventos = eventoService.search(search);
+            return ResponseEntity.ok().body(eventos);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @PostMapping("/instituicao/search")
+    public ResponseEntity<List<Instituicao>> searchInstituicao(@RequestBody EventoInstituicaoSearchRequest search) {
+        try {
+            List<Instituicao> instituicoes = instituicaoService.search(search);
+            return ResponseEntity.ok().body(instituicoes);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.badRequest().body(null);
         }
     }
 

@@ -2,6 +2,7 @@ package br.com.minhaudocao.adote.service;
 
 import br.com.minhaudocao.adote.entity.*;
 import br.com.minhaudocao.adote.exception.ResourceNotFoundException;
+import br.com.minhaudocao.adote.model.EventoInstituicaoSearchRequest;
 import br.com.minhaudocao.adote.repository.DataRepository;
 import br.com.minhaudocao.adote.repository.EnderecoRepository;
 import br.com.minhaudocao.adote.repository.EventoRepository;
@@ -139,5 +140,39 @@ public class EventoService {
 
     public void deleteData(Long id) {
         dataRepository.deleteById(id);
+    }
+
+    public List<Evento> search(EventoInstituicaoSearchRequest search) {
+        List<Endereco> enderecos = null;
+        List<Evento> eventos = null;
+
+        if(search.getBairro() != null && search.getCidade() != null) {
+            enderecos = enderecoRepository.findByCidadeAndBairro(search.getCidade(), search.getBairro());
+        }else if(search.getBairro() != null){
+            enderecos = enderecoRepository.findByBairro(search.getBairro());
+        }else if(search.getCidade() != null){
+            enderecos = enderecoRepository.findByCidade(search.getCidade());
+        }
+
+        if(enderecos != null && search.getNome() != null){
+            for(Endereco endereco: enderecos){
+                if(eventos != null){
+                    eventos = eventoRepository.findByNomeAndEndereco(search.getNome(), endereco);
+                }else {
+                    eventos.addAll(eventoRepository.findByNomeAndEndereco(search.getNome(), endereco));
+                }
+            }
+        }else if(enderecos != null){
+            for(Endereco endereco: enderecos){
+                if(eventos != null){
+                    eventos = eventoRepository.findByEndereco(endereco);
+                }else {
+                    eventos.addAll(eventoRepository.findByEndereco(endereco));
+                }
+            }
+        }else if(search.getNome() != null){
+            eventos = eventoRepository.findByNome(search.getNome());
+        }
+        return eventos;
     }
 }

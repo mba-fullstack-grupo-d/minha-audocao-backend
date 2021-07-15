@@ -15,6 +15,8 @@ public class AuthenticationResponse implements Serializable {
 
     private List<String> roles;
 
+    private Long id;
+
     public AuthenticationResponse(String jwt) {
         this.jwt = jwt;
     }
@@ -29,6 +31,14 @@ public class AuthenticationResponse implements Serializable {
 
     public void setRole(Collection roles) {
         this.roles = (List<String>) roles.stream().map((auth) -> ((SimpleGrantedAuthority)auth).getAuthority()).collect(Collectors.toList());
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
 
