@@ -1,13 +1,12 @@
 package br.com.minhaudocao.adote.controller;
 
-import java.util.List;
 import br.com.minhaudocao.adote.entity.*;
 import br.com.minhaudocao.adote.exception.EmailExistsException;
 import br.com.minhaudocao.adote.exception.ResourceNotFoundException;
 import br.com.minhaudocao.adote.model.AuthenticationRequest;
 import br.com.minhaudocao.adote.model.AuthenticationResponse;
 import br.com.minhaudocao.adote.model.EventoInstituicaoSearchRequest;
-import br.com.minhaudocao.adote.model.PetSearchRequest;
+//import br.com.minhaudocao.adote.model.PetSearchRequest;
 import br.com.minhaudocao.adote.service.*;
 import br.com.minhaudocao.adote.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +23,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 
 @Controller
@@ -64,6 +65,9 @@ public class MinhaAudocaoController {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private NotifierService notifierService;
 
 
     @PostMapping(path = "/pessoa/add")
@@ -310,16 +314,16 @@ public class MinhaAudocaoController {
         }
     }
 
-    @PostMapping("/pet/search")
-    public ResponseEntity<List<Pet>> searchPet(@RequestBody PetSearchRequest petSearch) {
-        try {
-            List<Pet> pets = petService.search(petSearch);
-            return ResponseEntity.ok().body(pets);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
+//    @PostMapping("/pet/search")
+//    public ResponseEntity<List<Pet>> searchPet(@RequestBody PetSearchRequest petSearch) {
+//        try {
+//            List<Pet> pets = petService.search(petSearch);
+//            return ResponseEntity.ok().body(pets);
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//            return ResponseEntity.badRequest().body(null);
+//        }
+//    }
 
     @DeleteMapping("/pet/delete/{id}")
     @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ADMIN')")
@@ -424,6 +428,30 @@ public class MinhaAudocaoController {
         } catch (Exception ex) {
             ex.printStackTrace();
             return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+
+    @GetMapping(path = "/send")
+    @PreAuthorize("hasRole('USER') or hasRole('INSTITUICAO') or hasRole('ADMIN')")
+    public @ResponseBody ResponseEntity<String> sendEmail() {
+        try {
+            notifierService.send();
+            return ResponseEntity.ok().body("ok");
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/instituicao")
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ADMIN')")
+    public ResponseEntity<String> updateInstituicao(@RequestBody Instituicao instituicao){
+        try{
+            instituicaoService.update(instituicao);
+            return ResponseEntity.ok().body("Instituicao atualizada com sucesso");
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
         }
     }
 

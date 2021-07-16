@@ -10,6 +10,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.util.List;
 import java.util.Optional;
 
@@ -172,5 +175,21 @@ public class InstituicaoService {
         }
         return instituicaos;
     }
+
+    @Transactional
+    public void update(Instituicao instituicao) throws ResourceNotFoundException {
+        Optional<Instituicao> instituicaoToUpdate = instituicaoRepository.findById(instituicao.getId());
+        if(instituicaoToUpdate.isPresent()){
+            instituicaoToUpdate.get().setNome(instituicao.getNome());
+            instituicaoToUpdate.get().setDescricao(instituicao.getDescricao());
+            instituicaoToUpdate.get().setEmail(instituicao.getEmail());
+            instituicaoToUpdate.get().setTelefone(instituicao.getTelefone());
+            instituicaoToUpdate.get().setEndereco(instituicao.getEndereco());
+            instituicaoRepository.save(instituicaoToUpdate.get());
+        }else{
+            throw new ResourceNotFoundException("Instituição não encontrada");
+        }
+    }
+
 }
 
