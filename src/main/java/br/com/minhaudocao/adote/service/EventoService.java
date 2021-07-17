@@ -175,4 +175,19 @@ public class EventoService {
         }
         return eventos;
     }
+
+    @Transactional
+    public void update(Evento evento) throws ResourceNotFoundException {
+        Optional<Evento> eventoToUpdate = eventoRepository.findById(evento.getId());
+        if(eventoToUpdate.isPresent()){
+            eventoToUpdate.get().setNome(evento.getNome());
+            eventoToUpdate.get().setDescricao(evento.getDescricao());
+            eventoToUpdate.get().setInstituicao(evento.getInstituicao());
+            eventoToUpdate.get().setEndereco(evento.getEndereco());
+            eventoToUpdate.get().setDatas(evento.getDatas());
+            eventoRepository.save(eventoToUpdate.get());
+        }else{
+            throw new ResourceNotFoundException("Evento não encontrado");
+        }
+    }
 }

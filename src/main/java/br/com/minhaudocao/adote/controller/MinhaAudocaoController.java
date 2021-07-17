@@ -6,7 +6,7 @@ import br.com.minhaudocao.adote.exception.ResourceNotFoundException;
 import br.com.minhaudocao.adote.model.AuthenticationRequest;
 import br.com.minhaudocao.adote.model.AuthenticationResponse;
 import br.com.minhaudocao.adote.model.EventoInstituicaoSearchRequest;
-//import br.com.minhaudocao.adote.model.PetSearchRequest;
+import br.com.minhaudocao.adote.model.PetSearchRequest;
 import br.com.minhaudocao.adote.service.*;
 import br.com.minhaudocao.adote.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -314,16 +314,16 @@ public class MinhaAudocaoController {
         }
     }
 
-//    @PostMapping("/pet/search")
-//    public ResponseEntity<List<Pet>> searchPet(@RequestBody PetSearchRequest petSearch) {
-//        try {
-//            List<Pet> pets = petService.search(petSearch);
-//            return ResponseEntity.ok().body(pets);
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//            return ResponseEntity.badRequest().body(null);
-//        }
-//    }
+    @PostMapping("/pet/search")
+    public ResponseEntity<List<Pet>> searchPet(@RequestBody PetSearchRequest petSearch) {
+        try {
+            List<Pet> pets = petService.search(petSearch);
+            return ResponseEntity.ok().body(pets);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 
     @DeleteMapping("/pet/delete/{id}")
     @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ADMIN')")
@@ -449,6 +449,45 @@ public class MinhaAudocaoController {
         try{
             instituicaoService.update(instituicao);
             return ResponseEntity.ok().body("Instituicao atualizada com sucesso");
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+    @PutMapping("/pessoa")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<String> updatePessoa(@RequestBody Pessoa pessoa){
+        try{
+            pessoaService.update(pessoa);
+            return ResponseEntity.ok().body("Pessoa atualizada com sucesso");
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+    @PutMapping("/pet")
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ADMIN')")
+    public ResponseEntity<String> updatePet(@RequestBody Pet pet){
+        try{
+            petService.update(pet);
+            return ResponseEntity.ok().body("Pet atualizada com sucesso");
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+    @PutMapping("/evento")
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ADMIN')")
+    public ResponseEntity<String> updateEvento(@RequestBody Evento evento){
+        try{
+            eventoService.update(evento);
+            return ResponseEntity.ok().body("Evento atualizado com sucesso");
         }catch(Exception e){
             e.printStackTrace();
             return ResponseEntity.notFound().build();

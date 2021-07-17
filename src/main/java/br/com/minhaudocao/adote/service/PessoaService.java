@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.Column;
 import java.util.List;
 import java.util.Optional;
 
@@ -114,6 +115,20 @@ public class PessoaService {
         Optional<Pessoa> optionalPessoa = pessoaRepository.findByEmail(email);
         if(optionalPessoa.isPresent()){
             return optionalPessoa.get().getIdPessoa();
+        }else{
+            throw new ResourceNotFoundException("Pessoa não encontrada");
+        }
+    }
+
+    @Transactional
+    public void update(Pessoa pessoa) throws ResourceNotFoundException {
+        Optional<Pessoa> pessoaToUpdate = pessoaRepository.findById(pessoa.getIdPessoa());
+        if(pessoaToUpdate.isPresent()){
+            pessoaToUpdate.get().setNome(pessoa.getNome());
+            pessoaToUpdate.get().setSobrenome(pessoa.getSobrenome());
+            pessoaToUpdate.get().setEmail(pessoa.getEmail());
+            pessoaToUpdate.get().setEndereco(pessoa.getEndereco());
+            pessoaRepository.save(pessoaToUpdate.get());
         }else{
             throw new ResourceNotFoundException("Pessoa não encontrada");
         }

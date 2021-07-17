@@ -247,4 +247,20 @@ public class PetService {
             throw new ResourceNotFoundException("Pet não encontrado");
         }
     }
+
+    @Transactional
+    public void update(Pet pet) throws ResourceNotFoundException {
+        Optional<Pet> petToUpdate = petRepository.findById(pet.getId());
+        if(petToUpdate.isPresent()){
+            petToUpdate.get().setNome(pet.getNome());
+            petToUpdate.get().setEspecie(pet.getEspecie());
+            petToUpdate.get().setDescricao(pet.getDescricao());
+            petToUpdate.get().setAdotado(pet.getAdotado());
+            petToUpdate.get().setGenero(pet.getGenero());
+            petToUpdate.get().setIdade(pet.getIdade());
+            petRepository.save(petToUpdate.get());
+        }else{
+            throw new ResourceNotFoundException("Pet não encontrado");
+        }
+    }
 }
