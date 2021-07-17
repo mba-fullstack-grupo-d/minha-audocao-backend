@@ -153,7 +153,7 @@ public class InstituicaoService {
 
         if(enderecos != null && search.getNome() != null){
             for(Endereco endereco: enderecos){
-                if(instituicaos != null){
+                if(instituicaos == null){
                     instituicaos = instituicaoRepository.findByNomeAndEndereco(search.getNome(), endereco);
                 }else {
                     instituicaos.addAll(instituicaoRepository.findByNomeAndEndereco(search.getNome(), endereco));
@@ -161,7 +161,7 @@ public class InstituicaoService {
             }
         }else if(enderecos != null){
             for(Endereco endereco: enderecos){
-                if(instituicaos != null){
+                if(instituicaos == null){
                     instituicaos = instituicaoRepository.findByEndereco(endereco);
                 }else {
                     instituicaos.addAll(instituicaoRepository.findByEndereco(endereco));
