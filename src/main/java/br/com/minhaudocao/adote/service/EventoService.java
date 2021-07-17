@@ -156,7 +156,7 @@ public class EventoService {
 
         if(enderecos != null && search.getNome() != null){
             for(Endereco endereco: enderecos){
-                if(eventos != null){
+                if(eventos == null){
                     eventos = eventoRepository.findByNomeAndEndereco(search.getNome(), endereco);
                 }else {
                     eventos.addAll(eventoRepository.findByNomeAndEndereco(search.getNome(), endereco));
@@ -164,7 +164,7 @@ public class EventoService {
             }
         }else if(enderecos != null){
             for(Endereco endereco: enderecos){
-                if(eventos != null){
+                if(eventos == null){
                     eventos = eventoRepository.findByEndereco(endereco);
                 }else {
                     eventos.addAll(eventoRepository.findByEndereco(endereco));
