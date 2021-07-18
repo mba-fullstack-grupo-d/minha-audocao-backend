@@ -432,11 +432,10 @@ public class MinhaAudocaoController {
     }
 
 
-    @GetMapping(path = "/send")
-    @PreAuthorize("hasRole('USER') or hasRole('INSTITUICAO') or hasRole('ADMIN')")
-    public @ResponseBody ResponseEntity<String> sendEmail() {
+    @GetMapping(path = "/send/{id}")
+    public @ResponseBody ResponseEntity<String> sendEmail(@PathVariable Long id, @RequestBody String mensagem) {
         try {
-            notifierService.send();
+            notifierService.send(id, mensagem);
             return ResponseEntity.ok().body("ok");
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
@@ -454,7 +453,6 @@ public class MinhaAudocaoController {
             return ResponseEntity.notFound().build();
         }
     }
-
 
     @PutMapping("/pessoa")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
@@ -480,7 +478,6 @@ public class MinhaAudocaoController {
             return ResponseEntity.notFound().build();
         }
     }
-
 
     @PutMapping("/evento")
     @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ADMIN')")
