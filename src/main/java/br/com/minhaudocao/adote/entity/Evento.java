@@ -14,6 +14,8 @@ public class Evento {
     @Column(nullable = false)
     private String descricao;
 
+    private String imagem;
+
     @ManyToOne
     @JoinColumn(name = "idinstituicao")
     private Instituicao instituicao;

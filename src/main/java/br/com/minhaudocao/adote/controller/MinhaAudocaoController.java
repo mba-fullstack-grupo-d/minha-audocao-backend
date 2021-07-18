@@ -148,7 +148,7 @@ public class MinhaAudocaoController {
     }
 
     @GetMapping(path = "/pessoa/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public @ResponseBody ResponseEntity<Pessoa> getPessoa(@PathVariable("id") Long id) {
         try {
             Pessoa pessoa = pessoaService.getById(id);
