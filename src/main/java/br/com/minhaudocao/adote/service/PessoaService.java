@@ -127,6 +127,7 @@ public class PessoaService {
             pessoaToUpdate.get().setNome(pessoa.getNome());
             pessoaToUpdate.get().setSobrenome(pessoa.getSobrenome());
             pessoaToUpdate.get().setEmail(pessoa.getEmail());
+            pessoaToUpdate.get().setTelefone(pessoa.getTelefone());
             pessoaToUpdate.get().setEndereco(pessoa.getEndereco());
             pessoaRepository.save(pessoaToUpdate.get());
         }else{

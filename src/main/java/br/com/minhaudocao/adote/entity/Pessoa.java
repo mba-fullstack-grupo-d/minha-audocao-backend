@@ -1,7 +1,5 @@
 package br.com.minhaudocao.adote.entity;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import javax.persistence.*;
 
 @Entity
@@ -22,6 +20,8 @@ public class Pessoa {
     private String imagem;
     @Column(nullable = false)
     private String senha;
+    @Column(nullable = false)
+    private String telefone;
 
     @ManyToOne
     @JoinColumn(name = "idendereco")
@@ -82,4 +82,8 @@ public class Pessoa {
     public void setEndereco(Endereco endereco) {
         this.endereco = endereco;
     }
+
+    public String getTelefone() { return telefone; }
+
+    public void setTelefone(String telefone) { this.telefone = telefone; }
 }
