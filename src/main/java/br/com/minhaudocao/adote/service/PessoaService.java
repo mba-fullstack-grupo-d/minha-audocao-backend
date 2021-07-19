@@ -123,12 +123,21 @@ public class PessoaService {
     @Transactional
     public void update(Pessoa pessoa) throws ResourceNotFoundException {
         Optional<Pessoa> pessoaToUpdate = pessoaRepository.findById(pessoa.getIdPessoa());
+        Optional<Endereco> enderecoToUpdate = enderecoRepository.findById(pessoa.getEndereco().getId());
         if(pessoaToUpdate.isPresent()){
+
+            enderecoToUpdate.get().setCidade(pessoa.getEndereco().getCidade());
+            enderecoToUpdate.get().setEstado(pessoa.getEndereco().getEstado());
+            enderecoToUpdate.get().setLogradouro(pessoa.getEndereco().getLogradouro());
+            enderecoToUpdate.get().setNumero(pessoa.getEndereco().getNumero());
+            enderecoToUpdate.get().setCep(pessoa.getEndereco().getCep());
+            enderecoToUpdate.get().setBairro(pessoa.getEndereco().getBairro());
+
             pessoaToUpdate.get().setNome(pessoa.getNome());
             pessoaToUpdate.get().setSobrenome(pessoa.getSobrenome());
             pessoaToUpdate.get().setEmail(pessoa.getEmail());
             pessoaToUpdate.get().setTelefone(pessoa.getTelefone());
-            pessoaToUpdate.get().setEndereco(pessoa.getEndereco());
+            pessoaToUpdate.get().setEndereco(enderecoToUpdate.get());
             pessoaRepository.save(pessoaToUpdate.get());
         }else{
             throw new ResourceNotFoundException("Pessoa não encontrada");
