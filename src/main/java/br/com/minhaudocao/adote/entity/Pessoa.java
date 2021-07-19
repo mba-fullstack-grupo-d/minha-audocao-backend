@@ -20,7 +20,7 @@ public class Pessoa {
     private String imagem;
     @Column(nullable = false)
     private String senha;
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String telefone;
 
     @ManyToOne
