@@ -258,6 +258,8 @@ public class PetService {
             petToUpdate.get().setAdotado(pet.getAdotado());
             petToUpdate.get().setGenero(pet.getGenero());
             petToUpdate.get().setIdade(pet.getIdade());
+            petToUpdate.get().setCastrado(pet.getCastrado());
+            petToUpdate.get().setVacinado(pet.getVacinado());
             petRepository.save(petToUpdate.get());
         }else{
             throw new ResourceNotFoundException("Pet não encontrado");

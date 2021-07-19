@@ -432,10 +432,10 @@ public class MinhaAudocaoController {
     }
 
 
-    @GetMapping(path = "/send/{id}")
-    public @ResponseBody ResponseEntity<String> sendEmail(@PathVariable Long id, @RequestBody String mensagem) {
+    @PostMapping(path = "/send")
+    public @ResponseBody ResponseEntity<String> sendEmail(@RequestBody FormularioSend formulario) {
         try {
-            notifierService.send(id, mensagem);
+            notifierService.send(formulario);
             return ResponseEntity.ok().body("ok");
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
@@ -490,5 +490,4 @@ public class MinhaAudocaoController {
             return ResponseEntity.notFound().build();
         }
     }
-
 }
