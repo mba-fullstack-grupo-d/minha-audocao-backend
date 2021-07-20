@@ -179,12 +179,21 @@ public class InstituicaoService {
     @Transactional
     public void update(Instituicao instituicao) throws ResourceNotFoundException {
         Optional<Instituicao> instituicaoToUpdate = instituicaoRepository.findById(instituicao.getId());
+        Optional<Endereco> enderecoToUpdate = enderecoRepository.findById(instituicao.getEndereco().getId());
         if(instituicaoToUpdate.isPresent()){
+
+            enderecoToUpdate.get().setCidade(instituicao.getEndereco().getCidade());
+            enderecoToUpdate.get().setEstado(instituicao.getEndereco().getEstado());
+            enderecoToUpdate.get().setLogradouro(instituicao.getEndereco().getLogradouro());
+            enderecoToUpdate.get().setNumero(instituicao.getEndereco().getNumero());
+            enderecoToUpdate.get().setCep(instituicao.getEndereco().getCep());
+            enderecoToUpdate.get().setBairro(instituicao.getEndereco().getBairro());
+
             instituicaoToUpdate.get().setNome(instituicao.getNome());
             instituicaoToUpdate.get().setDescricao(instituicao.getDescricao());
             instituicaoToUpdate.get().setEmail(instituicao.getEmail());
             instituicaoToUpdate.get().setTelefone(instituicao.getTelefone());
-            instituicaoToUpdate.get().setEndereco(instituicao.getEndereco());
+            instituicaoToUpdate.get().setEndereco(enderecoToUpdate.get());
             instituicaoRepository.save(instituicaoToUpdate.get());
         }else{
             throw new ResourceNotFoundException("Instituição não encontrada");

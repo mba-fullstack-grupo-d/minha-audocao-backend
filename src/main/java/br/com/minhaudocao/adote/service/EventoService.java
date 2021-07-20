@@ -179,11 +179,20 @@ public class EventoService {
     @Transactional
     public void update(Evento evento) throws ResourceNotFoundException {
         Optional<Evento> eventoToUpdate = eventoRepository.findById(evento.getId());
+        Optional<Endereco> enderecoToUpdate = enderecoRepository.findById(evento.getEndereco().getId());
         if(eventoToUpdate.isPresent()){
+
+            enderecoToUpdate.get().setCidade(evento.getEndereco().getCidade());
+            enderecoToUpdate.get().setEstado(evento.getEndereco().getEstado());
+            enderecoToUpdate.get().setLogradouro(evento.getEndereco().getLogradouro());
+            enderecoToUpdate.get().setNumero(evento.getEndereco().getNumero());
+            enderecoToUpdate.get().setCep(evento.getEndereco().getCep());
+            enderecoToUpdate.get().setBairro(evento.getEndereco().getBairro());
+
             eventoToUpdate.get().setNome(evento.getNome());
             eventoToUpdate.get().setDescricao(evento.getDescricao());
             eventoToUpdate.get().setInstituicao(evento.getInstituicao());
-            eventoToUpdate.get().setEndereco(evento.getEndereco());
+            eventoToUpdate.get().setEndereco(enderecoToUpdate.get());
             eventoToUpdate.get().setDatas(evento.getDatas());
             eventoRepository.save(eventoToUpdate.get());
         }else{

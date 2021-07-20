@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Column;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,5 +84,40 @@ public class FormularioService {
 
     public void delete(Long id) {
         formularioRepository.deleteById(id);
+    }
+
+    public void update(Formulario formulario) throws ResourceNotFoundException {
+
+        Optional<Formulario> formularioToUpdate =  formularioRepository.findById(formulario.getId());
+
+        if(formularioToUpdate.isPresent()){
+            Optional<Instituicao> instituicaoToUpdate = instituicaoRepository.findById(formulario.getInstituicao().getId());
+            Optional<Endereco> enderecoToUpdate = enderecoRepository.findById(formulario.getInstituicao().getEndereco().getId());
+
+            enderecoToUpdate.get().setCidade(formulario.getInstituicao().getEndereco().getCidade());
+            enderecoToUpdate.get().setEstado(formulario.getInstituicao().getEndereco().getEstado());
+            enderecoToUpdate.get().setLogradouro(formulario.getInstituicao().getEndereco().getLogradouro());
+            enderecoToUpdate.get().setNumero(formulario.getInstituicao().getEndereco().getNumero());
+            enderecoToUpdate.get().setCep(formulario.getInstituicao().getEndereco().getCep());
+            enderecoToUpdate.get().setBairro(formulario.getInstituicao().getEndereco().getBairro());
+
+            instituicaoToUpdate.get().setNome(formulario.getInstituicao().getNome());
+            instituicaoToUpdate.get().setDescricao(formulario.getInstituicao().getDescricao());
+            instituicaoToUpdate.get().setEmail(formulario.getInstituicao().getEmail());
+            instituicaoToUpdate.get().setTelefone(formulario.getInstituicao().getTelefone());
+            instituicaoToUpdate.get().setEndereco(enderecoToUpdate.get());
+
+            formularioToUpdate.get().setNome(formulario.getNome());
+            formularioToUpdate.get().setTipo(formulario.getTipo());
+            formularioToUpdate.get().setObrigatorio(formulario.getObrigatorio());
+            formularioToUpdate.get().setOrdem(formulario.getOrdem());
+            formularioToUpdate.get().setInstituicao(instituicaoToUpdate.get());
+
+            formularioRepository.save(formularioToUpdate.get());
+        }else{
+            throw new ResourceNotFoundException("Formulario não encontrada");
+        }
+
+
     }
 }
