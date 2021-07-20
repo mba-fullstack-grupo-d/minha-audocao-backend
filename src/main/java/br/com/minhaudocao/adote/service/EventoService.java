@@ -173,6 +173,13 @@ public class EventoService {
         }else if(search.getNome() != null){
             eventos = eventoRepository.findByNome(search.getNome());
         }
+
+        if(eventos != null){
+            for (Evento evento: eventos) {
+                evento.setDatas(dataRepository.findByIdEvento(evento.getId()));
+            }
+        }
+
         return eventos;
     }
 
