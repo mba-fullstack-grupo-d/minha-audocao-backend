@@ -431,7 +431,6 @@ public class MinhaAudocaoController {
         }
     }
 
-
     @PostMapping(path = "/send")
     public @ResponseBody ResponseEntity<String> sendEmail(@RequestBody FormularioSend formulario) {
         try {
@@ -466,7 +465,6 @@ public class MinhaAudocaoController {
         }
     }
 
-
     @PutMapping("/pet")
     @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ADMIN')")
     public ResponseEntity<String> updatePet(@RequestBody Pet pet){
@@ -485,6 +483,18 @@ public class MinhaAudocaoController {
         try{
             eventoService.update(evento);
             return ResponseEntity.ok().body("Evento atualizado com sucesso");
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/formulario/")
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ADMIN')")
+    public ResponseEntity<String> updateFormulario(@RequestBody Formulario formulario ){
+        try{
+            formularioService.update(formulario);
+            return ResponseEntity.ok().body("Formulario atualizado com sucesso");
         }catch(Exception e){
             e.printStackTrace();
             return ResponseEntity.notFound().build();
