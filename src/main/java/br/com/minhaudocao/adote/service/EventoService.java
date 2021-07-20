@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Column;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -179,8 +182,10 @@ public class EventoService {
     @Transactional
     public void update(Evento evento) throws ResourceNotFoundException {
         Optional<Evento> eventoToUpdate = eventoRepository.findById(evento.getId());
-        Optional<Endereco> enderecoToUpdate = enderecoRepository.findById(evento.getEndereco().getId());
+
         if(eventoToUpdate.isPresent()){
+            Optional<Endereco> enderecoToUpdate = enderecoRepository.findById(evento.getEndereco().getId());
+            List<Data> datasResponse = dataRepository.findByIdEvento(evento.getId());
 
             enderecoToUpdate.get().setCidade(evento.getEndereco().getCidade());
             enderecoToUpdate.get().setEstado(evento.getEndereco().getEstado());
@@ -193,7 +198,20 @@ public class EventoService {
             eventoToUpdate.get().setDescricao(evento.getDescricao());
             eventoToUpdate.get().setInstituicao(evento.getInstituicao());
             eventoToUpdate.get().setEndereco(enderecoToUpdate.get());
-            eventoToUpdate.get().setDatas(evento.getDatas());
+
+            List<Data> savedDatas = new LinkedList<>();
+
+            if(!datasResponse.isEmpty()){
+                for (Data dadaToUpdate : datasResponse) {
+                    for (Data datas : eventoToUpdate.get().getDatas()) {
+                        dadaToUpdate.setData(datas.getData());
+                        dadaToUpdate.setHoraInicio(datas.getHoraInicio());
+                        dadaToUpdate.setHoraFim(datas.getHoraFim());
+                        savedDatas.add(dataRepository.save(datas));
+                    }
+                }
+            }
+            eventoToUpdate.get().setDatas(savedDatas);
             eventoRepository.save(eventoToUpdate.get());
         }else{
             throw new ResourceNotFoundException("Evento não encontrado");
