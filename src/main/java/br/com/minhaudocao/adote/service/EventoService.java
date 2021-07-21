@@ -191,8 +191,18 @@ public class EventoService {
         Optional<Evento> eventoToUpdate = eventoRepository.findById(evento.getId());
 
         if(eventoToUpdate.isPresent()){
+            Optional<Instituicao> instituicaoToUpdate = instituicaoRepository.findById(evento.getInstituicao().getId());
+            Optional<Endereco> enderecoInstituicaoToUpdate = enderecoRepository.findById(evento.getInstituicao().getEndereco().getId());
+
+            enderecoInstituicaoToUpdate.get().setCidade(evento.getInstituicao().getEndereco().getCidade());
+            enderecoInstituicaoToUpdate.get().setEstado(evento.getInstituicao().getEndereco().getEstado());
+            enderecoInstituicaoToUpdate.get().setLogradouro(evento.getInstituicao().getEndereco().getLogradouro());
+            enderecoInstituicaoToUpdate.get().setNumero(evento.getInstituicao().getEndereco().getNumero());
+            enderecoInstituicaoToUpdate.get().setCep(evento.getInstituicao().getEndereco().getCep());
+            enderecoInstituicaoToUpdate.get().setBairro(evento.getInstituicao().getEndereco().getBairro());
+            instituicaoToUpdate.get().setEndereco(enderecoInstituicaoToUpdate.get());
+
             Optional<Endereco> enderecoToUpdate = enderecoRepository.findById(evento.getEndereco().getId());
-            List<Data> datasResponse = dataRepository.findByIdEvento(evento.getId());
 
             enderecoToUpdate.get().setCidade(evento.getEndereco().getCidade());
             enderecoToUpdate.get().setEstado(evento.getEndereco().getEstado());
@@ -208,14 +218,13 @@ public class EventoService {
 
             List<Data> savedDatas = new LinkedList<>();
 
-            if(!datasResponse.isEmpty()){
-                for (Data dadaToUpdate : datasResponse) {
-                    for (Data datas : eventoToUpdate.get().getDatas()) {
-                        dadaToUpdate.setData(datas.getData());
-                        dadaToUpdate.setHoraInicio(datas.getHoraInicio());
-                        dadaToUpdate.setHoraFim(datas.getHoraFim());
-                        savedDatas.add(dataRepository.save(datas));
-                    }
+            if(!evento.getDatas().isEmpty()){
+                for(Data dataToUpdate: evento.getDatas()){
+                    Optional<Data> dataResponse = dataRepository.findById(dataToUpdate.getId());
+                    dataResponse.get().setData(dataToUpdate.getData());
+                    dataResponse.get().setHoraInicio(dataToUpdate.getHoraInicio());
+                    dataResponse.get().setHoraFim(dataToUpdate.getHoraFim());
+                    savedDatas.add(dataRepository.save(dataResponse.get()));
                 }
             }
             eventoToUpdate.get().setDatas(savedDatas);

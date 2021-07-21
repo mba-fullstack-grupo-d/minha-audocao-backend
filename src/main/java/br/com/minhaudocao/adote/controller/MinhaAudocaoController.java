@@ -478,7 +478,7 @@ public class MinhaAudocaoController {
     }
 
     @PutMapping("/evento")
-    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<String> updateEvento(@RequestBody Evento evento){
         try{
             eventoService.update(evento);
@@ -489,8 +489,8 @@ public class MinhaAudocaoController {
         }
     }
 
-    @PutMapping("/formulario/")
-    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ADMIN')")
+    @PutMapping("/formulario")
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<String> updateFormulario(@RequestBody Formulario formulario ){
         try{
             formularioService.update(formulario);
