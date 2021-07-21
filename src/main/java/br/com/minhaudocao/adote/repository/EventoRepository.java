@@ -14,6 +14,8 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 
     public List<Evento> findByNomeAndEndereco(String nome, Endereco endereco);
 
+    public List<Evento> findByInstituicaoAndEndereco(Instituicao instituicao, Endereco endereco);
+
     public List<Evento> findByNome(String nome);
 
     public List<Evento> findByEndereco(Endereco endereco);

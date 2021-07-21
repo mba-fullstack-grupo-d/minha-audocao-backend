@@ -148,6 +148,7 @@ public class EventoService {
     public List<Evento> search(EventoInstituicaoSearchRequest search) {
         List<Endereco> enderecos = null;
         List<Evento> eventos = null;
+        List<Instituicao> instituicaos = null;
 
         if(search.getBairro() != null && search.getCidade() != null) {
             enderecos = enderecoRepository.findByCidadeAndBairro(search.getCidade(), search.getBairro());
@@ -157,12 +158,18 @@ public class EventoService {
             enderecos = enderecoRepository.findByCidade(search.getCidade());
         }
 
-        if(enderecos != null && search.getNome() != null){
+        if(search.getNome() != null){
+            instituicaos = instituicaoRepository.findByNome(search.getNome());
+        }
+
+        if(enderecos != null && instituicaos != null){
             for(Endereco endereco: enderecos){
-                if(eventos == null){
-                    eventos = eventoRepository.findByNomeAndEndereco(search.getNome(), endereco);
-                }else {
-                    eventos.addAll(eventoRepository.findByNomeAndEndereco(search.getNome(), endereco));
+                for(Instituicao instituicao:instituicaos){
+                    if(eventos == null){
+                        eventos = eventoRepository.findByInstituicaoAndEndereco(instituicao, endereco);
+                    }else{
+                        eventos.addAll(eventoRepository.findByInstituicaoAndEndereco(instituicao, endereco));
+                    }
                 }
             }
         }else if(enderecos != null){
@@ -173,8 +180,14 @@ public class EventoService {
                     eventos.addAll(eventoRepository.findByEndereco(endereco));
                 }
             }
-        }else if(search.getNome() != null){
-            eventos = eventoRepository.findByNome(search.getNome());
+        }else if(instituicaos != null){
+            for(Instituicao instituicao:instituicaos){
+                if(eventos == null){
+                    eventos = eventoRepository.findByInstituicao(instituicao);
+                }else{
+                    eventos.addAll(eventoRepository.findByInstituicao(instituicao));
+                }
+            }
         }
 
         if(eventos != null){
