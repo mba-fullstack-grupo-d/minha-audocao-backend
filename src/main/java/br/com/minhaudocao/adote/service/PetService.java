@@ -230,6 +230,14 @@ public class PetService {
         }else if(petSearch.getGenero() != null){
             pets = petRepository.findByGenero(petSearch.getGenero());
         }
+
+        for (Pet pet:pets) {
+            ArrayList<Foto> fotos = fotoRepository.findByPet(pet);
+            if(!fotos.isEmpty()){
+                pet.setUriFotos(fotos.stream().map(Foto::getUriFoto).collect(Collectors.toList()));
+            }
+        }
+
         return pets;
     }
 
