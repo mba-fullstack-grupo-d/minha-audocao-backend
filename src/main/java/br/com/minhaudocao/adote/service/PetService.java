@@ -231,10 +231,12 @@ public class PetService {
             pets = petRepository.findByGenero(petSearch.getGenero());
         }
 
-        for (Pet pet:pets) {
-            ArrayList<Foto> fotos = fotoRepository.findByPet(pet);
-            if(!fotos.isEmpty()){
-                pet.setUriFotos(fotos.stream().map(Foto::getUriFoto).collect(Collectors.toList()));
+        if(pets != null){
+            for(int i = 0; i<pets.size();i++){
+                ArrayList<Foto> fotos = fotoRepository.findByPet(pets.get(i));
+                if(!fotos.isEmpty()){
+                    pets.get(i).setUriFotos(fotos.stream().map(Foto::getUriFoto).collect(Collectors.toList()));
+                }
             }
         }
 
